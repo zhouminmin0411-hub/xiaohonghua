@@ -1,0 +1,63 @@
+[
+  {
+    "id": 1,
+    "taskId": 1,
+    "childId": 1,
+    "status": "completed",
+    "reward": 3,
+    "receivedAt": "2025-11-15T09:00:00Z",
+    "completedAt": "2025-11-15T09:15:00Z",
+    "parentLikedAt": "2025-11-15T20:00:00Z",
+    "taskTitle": "整理房间",
+    "taskIcon": "🧹"
+  },
+  {
+    "id": 2,
+    "taskId": 3,
+    "childId": 1,
+    "status": "completed",
+    "reward": 5,
+    "receivedAt": "2025-11-14T19:00:00Z",
+    "completedAt": "2025-11-14T19:30:00Z",
+    "parentLikedAt": null,
+    "taskTitle": "阅读30分钟",
+    "taskIcon": "📚"
+  },
+  {
+    "id": 3,
+    "taskId": 6,
+    "childId": 1,
+    "status": "completed",
+    "reward": 2,
+    "receivedAt": "2025-11-15T07:00:00Z",
+    "completedAt": "2025-11-15T07:05:00Z",
+    "parentLikedAt": "2025-11-15T20:00:00Z",
+    "taskTitle": "自己叠被子",
+    "taskIcon": "🛏️"
+  },
+  {
+    "id": 4,
+    "taskId": 9,
+    "childId": 1,
+    "status": "completed",
+    "reward": 1,
+    "receivedAt": "2025-11-14T21:00:00Z",
+    "completedAt": "2025-11-14T21:05:00Z",
+    "parentLikedAt": "2025-11-14T22:00:00Z",
+    "taskTitle": "早晚刷牙",
+    "taskIcon": "🦷"
+  },
+  {
+    "id": 5,
+    "taskId": 2,
+    "childId": 1,
+    "status": "received",
+    "reward": 10,
+    "receivedAt": "2025-11-15T10:00:00Z",
+    "completedAt": null,
+    "parentLikedAt": null,
+    "taskTitle": "完成1次10公里骑行",
+    "taskIcon": "🚴"
+  }
+]
+

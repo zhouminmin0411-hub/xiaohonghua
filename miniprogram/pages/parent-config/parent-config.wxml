@@ -1,0 +1,27 @@
+<!--每周积分配置页面-->
+<view class="container">
+  <van-cell-group>
+    <van-field
+      value="{{ config.weeklyAmount }}"
+      type="number"
+      label="每周积分"
+      placeholder="输入每周发放的积分数量"
+      bind:change="onAmountChange"
+    />
+    <van-cell title="启用每周发放" center>
+      <van-switch 
+        checked="{{ config.enabled }}" 
+        bind:change="onEnableChange"
+      />
+    </van-cell>
+  </van-cell-group>
+
+  <view class="save-button">
+    <van-button type="primary" round block bind:tap="onSave">
+      保存配置
+    </van-button>
+  </view>
+
+  <van-toast id="van-toast" />
+</view>
+

@@ -1,0 +1,231 @@
+/* 家长任务管理页面 */
+
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #F5F0E8 0%, #FFF8E7 100%);
+  padding-bottom: 40rpx;
+}
+
+/* 头部 */
+.header {
+  background: linear-gradient(135deg, #6B5744 0%, #8B7355 100%);
+  padding: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-title {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: white;
+}
+
+.add-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2rpx solid rgba(255, 255, 255, 0.6);
+  color: white;
+  padding: 16rpx 32rpx;
+  border-radius: 48rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  transition: all 0.3s ease;
+}
+
+.add-btn:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.add-icon {
+  font-size: 32rpx;
+}
+
+/* 任务列表 */
+.tasks-section {
+  padding: 32rpx;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.task-item {
+  background: white;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 12rpx rgba(107, 87, 68, 0.08);
+}
+
+.task-item.task-disabled {
+  opacity: 0.5;
+}
+
+.task-main {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.task-icon {
+  font-size: 80rpx;
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.task-info {
+  flex: 1;
+}
+
+.task-name {
+  font-size: 32rpx;
+  color: #6B5744;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+
+.task-meta {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 8rpx;
+}
+
+.task-type {
+  background: #FFF6D9;
+  color: #D97706;
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+}
+
+.task-reward {
+  color: #E8A87C;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.task-desc {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.5;
+}
+
+.task-actions {
+  display: flex;
+  gap: 16rpx;
+  justify-content: flex-end;
+}
+
+.action-btn {
+  padding: 16rpx 32rpx;
+  border-radius: 24rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.edit-btn {
+  background: #E8F5E9;
+  color: #4CAF50;
+}
+
+.delete-btn {
+  background: #FFEBEE;
+  color: #F44336;
+}
+
+/* 弹窗内容 */
+.popup-content {
+  padding: 32rpx;
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32rpx;
+}
+
+.popup-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #6B5744;
+}
+
+.popup-close {
+  font-size: 48rpx;
+  color: #999;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.form-actions {
+  display: flex;
+  gap: 24rpx;
+  margin-top: 32rpx;
+}
+
+.form-btn {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.form-btn:active {
+  transform: scale(0.98);
+}
+
+.cancel-btn {
+  background: #F5F5F5;
+  color: #666;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #6B5744 0%, #8B7355 100%);
+  color: white;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 160rpx 32rpx;
+}
+
+.empty-icon {
+  font-size: 160rpx;
+  display: block;
+  margin-bottom: 32rpx;
+  opacity: 0.4;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}

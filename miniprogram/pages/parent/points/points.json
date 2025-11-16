@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "积分调整",
+  "navigationBarBackgroundColor": "#6B5744",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "van-field": "@vant/weapp/field/index"
+  }
+}

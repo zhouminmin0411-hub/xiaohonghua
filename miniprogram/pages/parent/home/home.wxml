@@ -1,0 +1,104 @@
+<!--家长首页-->
+<view class="container">
+  <!-- 头部标题 -->
+  <view class="header">
+    <view class="header-title">家长视角</view>
+    <view class="header-subtitle">查看孩子成长轨迹</view>
+  </view>
+
+  <!-- 本周数据统计 -->
+  <view class="stats-section">
+    <view class="stats-card">
+      <view class="stats-item">
+        <view class="stats-number">{{weeklyStats.completedCount}}</view>
+        <view class="stats-label">本周完成</view>
+      </view>
+      <view class="stats-divider"></view>
+      <view class="stats-item">
+        <view class="stats-number">{{weeklyStats.totalPoints}}</view>
+        <view class="stats-label">本周积分</view>
+      </view>
+      <view class="stats-divider"></view>
+      <view class="stats-item">
+        <view class="stats-number">{{weeklyStats.likedCount}}</view>
+        <view class="stats-label">已点赞</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷功能入口 -->
+  <view class="quick-actions">
+    <view class="action-card" bind:tap="goToTaskManagement">
+      <view class="action-icon">📝</view>
+      <view class="action-title">任务管理</view>
+    </view>
+    <view class="action-card" bind:tap="goToRewardManagement">
+      <view class="action-icon">🎁</view>
+      <view class="action-title">奖励管理</view>
+    </view>
+    <view class="action-card" bind:tap="goToPointAdjustment">
+      <view class="action-icon">⚖️</view>
+      <view class="action-title">积分调整</view>
+    </view>
+    <view class="action-card" bind:tap="goToWeeklyConfig">
+      <view class="action-icon">⏰</view>
+      <view class="action-title">每周配置</view>
+    </view>
+  </view>
+
+  <!-- 已完成任务列表 -->
+  <view class="completed-section">
+    <view class="section-title">
+      <text>孩子的成就</text>
+      <text class="section-count">{{completedTasks.length}}条记录</text>
+    </view>
+
+    <view wx:if="{{completedTasks.length === 0}}" class="empty-state">
+      <text class="empty-icon">🎯</text>
+      <text class="empty-text">暂无完成记录</text>
+    </view>
+
+    <view wx:else class="task-list">
+      <view 
+        wx:for="{{completedTasks}}" 
+        wx:key="id" 
+        class="task-record-card"
+      >
+        <view class="task-record-left">
+          <view class="task-record-icon">{{item.taskIcon}}</view>
+          <view class="task-record-info">
+            <view class="task-record-title">{{item.taskTitle}}</view>
+            <view class="task-record-meta">
+              <text class="task-record-time">{{item.completedTime}}</text>
+              <text class="task-record-reward">+{{item.reward}} 小红花</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="task-record-right">
+          <view 
+            wx:if="{{!item.parentLikedAt}}"
+            class="like-btn"
+            bind:tap="onLikeTask"
+            data-id="{{item.id}}"
+          >
+            <text class="like-icon">❤️</text>
+            <text class="like-text">点赞</text>
+          </view>
+          <view wx:else class="liked-badge">
+            <text class="liked-icon">❤️</text>
+            <text class="liked-text">已点赞</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 退出家长视角 -->
+  <view class="footer-action">
+    <view class="exit-btn" bind:tap="exitParentMode">
+      退出家长视角
+    </view>
+  </view>
+</view>
+

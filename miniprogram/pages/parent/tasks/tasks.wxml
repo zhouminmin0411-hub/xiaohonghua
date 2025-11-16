@@ -1,0 +1,119 @@
+<!--家长任务管理页面-->
+<view class="container">
+  <!-- 头部 -->
+  <view class="header">
+    <view class="header-title">任务管理</view>
+    <view class="add-btn" bind:tap="showAddTask">
+      <text class="add-icon">+</text>
+      <text>新建任务</text>
+    </view>
+  </view>
+
+  <!-- 任务列表 -->
+  <view class="tasks-section">
+    <view wx:if="{{tasks.length === 0}}" class="empty-state">
+      <text class="empty-icon">📝</text>
+      <text class="empty-text">暂无任务，点击上方按钮新建</text>
+    </view>
+
+    <view wx:else class="task-list">
+      <view 
+        wx:for="{{tasks}}" 
+        wx:key="id" 
+        class="task-item {{!item.isActive ? 'task-disabled' : ''}}"
+      >
+        <view class="task-main">
+          <view class="task-icon">{{item.icon}}</view>
+          <view class="task-info">
+            <view class="task-name">{{item.title}}</view>
+            <view class="task-meta">
+              <view class="task-type">{{taskTypeMap[item.type]}}</view>
+              <view class="task-reward">奖励：{{item.reward}} 小红花</view>
+            </view>
+            <view wx:if="{{item.description}}" class="task-desc">{{item.description}}</view>
+          </view>
+        </view>
+
+        <view class="task-actions">
+          <view class="action-btn edit-btn" bind:tap="editTask" data-task="{{item}}">
+            编辑
+          </view>
+          <view class="action-btn delete-btn" bind:tap="deleteTask" data-id="{{item.id}}">
+            删除
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 新建/编辑任务弹窗 -->
+  <van-popup show="{{showPopup}}" position="bottom" custom-style="height: 75%; border-radius: 32rpx 32rpx 0 0;">
+    <view class="popup-content">
+      <view class="popup-header">
+        <view class="popup-title">{{editingTask ? '编辑任务' : '新建任务'}}</view>
+        <view class="popup-close" bind:tap="hidePopup">✕</view>
+      </view>
+
+      <view class="form">
+        <van-field
+          label="任务图标"
+          value="{{formData.icon}}"
+          placeholder="选择一个Emoji图标"
+          bind:change="onIconChange"
+        />
+
+        <van-field
+          label="任务名称"
+          value="{{formData.title}}"
+          placeholder="请输入任务名称"
+          bind:change="onTitleChange"
+          required
+        />
+
+        <van-field
+          label="任务描述"
+          value="{{formData.description}}"
+          placeholder="请输入任务描述（选填）"
+          type="textarea"
+          autosize
+          bind:change="onDescriptionChange"
+        />
+
+        <van-field
+          label="任务类型"
+          value="{{taskTypeMap[formData.type]}}"
+          placeholder="请选择任务类型"
+          readonly
+          is-link
+          bind:tap="showTypePicker"
+        />
+
+        <van-field
+          label="奖励积分"
+          value="{{formData.reward}}"
+          placeholder="请输入奖励积分"
+          type="number"
+          bind:change="onRewardChange"
+          required
+        />
+
+        <view class="form-actions">
+          <view class="form-btn cancel-btn" bind:tap="hidePopup">取消</view>
+          <view class="form-btn submit-btn" bind:tap="submitTask">
+            {{editingTask ? '保存' : '创建'}}
+          </view>
+        </view>
+      </view>
+    </view>
+  </van-popup>
+
+  <!-- 任务类型选择器 -->
+  <van-popup show="{{showTypePopup}}" position="bottom">
+    <van-picker
+      columns="{{typeColumns}}"
+      bind:confirm="onTypeConfirm"
+      bind:cancel="onTypeCancel"
+    />
+  </van-popup>
+</view>
+

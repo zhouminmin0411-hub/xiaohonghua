@@ -1,0 +1,67 @@
+<!--家长积分调整页面-->
+<view class="container">
+  <view class="header">
+    <view class="header-title">积分调整</view>
+    <view class="current-points">
+      <text class="points-label">孩子当前积分：</text>
+      <text class="points-number">{{currentPoints}}</text>
+    </view>
+  </view>
+
+  <view class="adjust-section">
+    <view class="section-title">调整积分</view>
+
+    <view class="adjust-form">
+      <van-field
+        label="调整数量"
+        value="{{adjustAmount}}"
+        placeholder="请输入调整数量（正数增加，负数扣减）"
+        type="number"
+        bind:change="onAmountChange"
+      />
+
+      <van-field
+        label="调整原因"
+        value="{{adjustReason}}"
+        placeholder="请输入调整原因（选填）"
+        type="textarea"
+        autosize
+        bind:change="onReasonChange"
+      />
+
+      <view class="quick-actions">
+        <view class="quick-btn" bind:tap="quickAdjust" data-amount="5">+5</view>
+        <view class="quick-btn" bind:tap="quickAdjust" data-amount="10">+10</view>
+        <view class="quick-btn" bind:tap="quickAdjust" data-amount="-5">-5</view>
+        <view class="quick-btn" bind:tap="quickAdjust" data-amount="-10">-10</view>
+      </view>
+
+      <view class="submit-btn" bind:tap="submitAdjustment">
+        确认调整
+      </view>
+    </view>
+  </view>
+
+  <!-- 调整历史 -->
+  <view class="history-section">
+    <view class="section-title">调整历史</view>
+
+    <view wx:if="{{history.length === 0}}" class="empty-state">
+      <text class="empty-text">暂无调整记录</text>
+    </view>
+
+    <view wx:else class="history-list">
+      <view wx:for="{{history}}" wx:key="id" class="history-item">
+        <view class="history-left">
+          <view class="history-change {{item.change > 0 ? 'change-positive' : 'change-negative'}}">
+            {{item.change > 0 ? '+' : ''}}{{item.change}}
+          </view>
+          <view class="history-info">
+            <view class="history-reason">{{item.reason}}</view>
+            <view class="history-time">{{item.time}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

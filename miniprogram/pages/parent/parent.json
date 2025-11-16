@@ -1,0 +1,12 @@
+{
+  "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
+    "van-dialog": "@vant/weapp/dialog/index",
+    "van-field": "@vant/weapp/field/index",
+    "van-toast": "@vant/weapp/toast/index"
+  },
+  "navigationBarTitleText": "家长视角",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#F9F9F9"
+}
+

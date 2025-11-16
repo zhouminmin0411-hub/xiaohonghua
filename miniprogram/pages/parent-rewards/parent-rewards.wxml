@@ -1,0 +1,35 @@
+<!--家长奖励管理页面-->
+<view class="container">
+  <view class="reward-list">
+    <view wx:if="{{rewards.length === 0}}" class="empty-state">
+      <text class="empty-icon">🎁</text>
+      <text class="empty-text">暂无奖励</text>
+    </view>
+
+    <view wx:else>
+      <view 
+        wx:for="{{rewards}}" 
+        wx:key="id"
+        class="reward-item"
+      >
+        <view class="reward-icon">{{item.icon}}</view>
+        <view class="reward-info">
+          <view class="reward-title">{{item.title}}</view>
+          <view class="reward-meta">
+            <text class="reward-type">{{item.type === 'virtual' ? '虚拟' : '实物'}}</text>
+            <text class="reward-cost">{{item.cost}} 小红花</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="add-button-container">
+    <van-button type="primary" round block icon="plus">
+      添加新奖励
+    </van-button>
+  </view>
+
+  <van-toast id="van-toast" />
+</view>
+

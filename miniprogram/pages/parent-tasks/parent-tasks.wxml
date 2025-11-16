@@ -1,0 +1,63 @@
+<!--家长任务管理页面-->
+<view class="container">
+  <!-- 任务列表 -->
+  <view class="task-list">
+    <view wx:if="{{tasks.length === 0}}" class="empty-state">
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">暂无任务</text>
+    </view>
+
+    <view wx:else>
+      <view 
+        wx:for="{{tasks}}" 
+        wx:key="id"
+        class="task-item {{!item.isActive ? 'task-disabled' : ''}}"
+      >
+        <view class="task-icon">{{item.icon}}</view>
+        <view class="task-info">
+          <view class="task-title">{{item.title}}</view>
+          <view class="task-meta">
+            <text class="task-type">{{taskTypeMap[item.type]}}</text>
+            <text class="task-reward">奖励: {{item.reward}} 小红花</text>
+          </view>
+        </view>
+        <view class="task-actions">
+          <van-button 
+            size="mini" 
+            type="default"
+            bind:tap="onEditTask"
+            data-task="{{item}}"
+          >
+            编辑
+          </van-button>
+          <van-button 
+            size="mini" 
+            type="warning"
+            bind:tap="onDeleteTask"
+            data-id="{{item.id}}"
+            wx:if="{{item.isActive}}"
+          >
+            删除
+          </van-button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 添加按钮 -->
+  <view class="add-button-container">
+    <van-button 
+      type="primary" 
+      round 
+      block
+      icon="plus"
+      bind:tap="onAddTask"
+    >
+      添加新任务
+    </van-button>
+  </view>
+
+  <!-- Toast -->
+  <van-toast id="van-toast" />
+</view>
+

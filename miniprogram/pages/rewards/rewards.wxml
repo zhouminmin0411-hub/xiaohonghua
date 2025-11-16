@@ -1,0 +1,89 @@
+<!--积分商城页面-->
+<view class="rewards-page">
+  <!-- 英雄头部 -->
+  <view class="rewards-hero">
+    <view class="hero-glimmer"></view>
+    <view class="hero-content">
+      <view class="hero-text-group">
+        <text class="hero-label">积分商城</text>
+        <text class="hero-sub">兑换属于你的惊喜奖励</text>
+      </view>
+      <view class="hero-points-card">
+        <view class="hero-flower">🌸</view>
+        <view class="hero-points-info">
+          <text class="hero-points-label">可用小红花</text>
+          <text class="hero-points-value">{{currentPoints}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 奖励列表 -->
+  <view class="rewards-section">
+    <view class="section-title">
+      <text>可兑换奖励</text>
+      <text class="section-subtitle">积分越多，惊喜越大</text>
+    </view>
+
+    <view wx:if="{{rewards.length === 0}}" class="empty-state">
+      <text class="empty-icon">🎁</text>
+      <text class="empty-text">暂无奖励</text>
+    </view>
+
+    <view wx:else class="reward-list">
+      <view 
+        wx:for="{{rewards}}" 
+        wx:key="id"
+        class="reward-card {{currentPoints < item.cost ? 'reward-disabled' : ''}}"
+      >
+        <view class="reward-card-body">
+          <view class="reward-icon-wrapper">
+            <view class="reward-icon">{{item.icon}}</view>
+          </view>
+
+          <view class="reward-info">
+            <view class="reward-title-row">
+              <view class="reward-title">{{item.title}}</view>
+              <view class="reward-type-tag">
+                {{item.type === 'virtual' ? '虚拟奖励' : '实物奖励'}}
+              </view>
+            </view>
+            <view class="reward-meta">
+              <view class="reward-cost">
+                <text class="cost-number">{{item.cost}}</text>
+                <text class="cost-unit"> 小红花</text>
+              </view>
+              <view class="reward-hint">兑换后可在记录里查看</view>
+            </view>
+          </view>
+        </view>
+
+        <view class="reward-action">
+          <view
+            class="redeem-btn {{currentPoints < item.cost ? 'btn-disabled' : ''}}"
+            bind:tap="onRedeemReward"
+            data-id="{{item.id}}"
+            data-title="{{item.title}}"
+            data-cost="{{item.cost}}"
+          >
+            {{currentPoints < item.cost ? '积分不足' : '立即兑换'}}
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 粒子爆炸动画层 -->
+  <canvas 
+    wx:if="{{showParticles}}" 
+    canvas-id="particleCanvas" 
+    class="particle-canvas"
+    style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
+  ></canvas>
+
+  <!-- Toast -->
+  <van-toast id="van-toast" />
+  
+  <!-- Dialog -->
+  <van-dialog id="van-dialog" />
+</view>

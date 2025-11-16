@@ -1,0 +1,11 @@
+// Mock 数据 - 用户信息
+module.exports = {
+  "id": 1,
+  "openid": "mock_openid_123456",
+  "role": "child",
+  "nickname": "小明",
+  "avatarUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132",
+  "childId": null,
+  "createdAt": "2025-11-01T08:00:00Z"
+}
+

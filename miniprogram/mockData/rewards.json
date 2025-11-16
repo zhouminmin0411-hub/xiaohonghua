@@ -1,0 +1,75 @@
+[
+  {
+    "id": 1,
+    "title": "看30分钟电视",
+    "cost": 10,
+    "icon": "📺",
+    "type": "virtual",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 2,
+    "title": "周末去游乐场",
+    "cost": 50,
+    "icon": "🎡",
+    "type": "physical",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 3,
+    "title": "晚睡30分钟",
+    "cost": 15,
+    "icon": "🌙",
+    "type": "virtual",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 4,
+    "title": "买喜欢的玩具",
+    "cost": 100,
+    "icon": "🧸",
+    "type": "physical",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 5,
+    "title": "一起做烘焙",
+    "cost": 30,
+    "icon": "🍰",
+    "type": "physical",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 6,
+    "title": "解锁彩虹头像框",
+    "cost": 20,
+    "icon": "🌈",
+    "type": "virtual",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 7,
+    "title": "选择周末活动",
+    "cost": 25,
+    "icon": "🎯",
+    "type": "virtual",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 8,
+    "title": "爸爸妈妈陪玩1小时",
+    "cost": 40,
+    "icon": "❤️",
+    "type": "physical",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  }
+]
+

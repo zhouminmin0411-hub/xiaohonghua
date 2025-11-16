@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "childId": 1,
+    "change": 10,
+    "reason": "每周固定积分",
+    "sourceType": "weekly",
+    "sourceId": null,
+    "createdAt": "2025-11-11T09:00:00Z"
+  },
+  {
+    "id": 2,
+    "childId": 1,
+    "change": 3,
+    "reason": "完成任务：整理房间",
+    "sourceType": "task",
+    "sourceId": 1,
+    "createdAt": "2025-11-15T09:15:00Z"
+  },
+  {
+    "id": 3,
+    "childId": 1,
+    "change": 5,
+    "reason": "完成任务：阅读30分钟",
+    "sourceType": "task",
+    "sourceId": 2,
+    "createdAt": "2025-11-14T19:30:00Z"
+  },
+  {
+    "id": 4,
+    "childId": 1,
+    "change": 2,
+    "reason": "完成任务：自己叠被子",
+    "sourceType": "task",
+    "sourceId": 3,
+    "createdAt": "2025-11-15T07:05:00Z"
+  },
+  {
+    "id": 5,
+    "childId": 1,
+    "change": 1,
+    "reason": "完成任务：早晚刷牙",
+    "sourceType": "task",
+    "sourceId": 4,
+    "createdAt": "2025-11-14T21:05:00Z"
+  },
+  {
+    "id": 6,
+    "childId": 1,
+    "change": -10,
+    "reason": "兑换奖励：看30分钟电视",
+    "sourceType": "reward",
+    "sourceId": 1,
+    "createdAt": "2025-11-14T15:00:00Z"
+  },
+  {
+    "id": 7,
+    "childId": 1,
+    "change": 1,
+    "reason": "家长积分调整",
+    "sourceType": "adjustment",
+    "sourceId": null,
+    "createdAt": "2025-11-13T20:00:00Z"
+  }
+]
+

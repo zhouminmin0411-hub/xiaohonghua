@@ -1,0 +1,113 @@
+[
+  {
+    "id": 1,
+    "type": "daily",
+    "icon": "🧹",
+    "title": "整理房间",
+    "description": "把房间整理得干干净净",
+    "reward": 3,
+    "timeEstimate": "5分钟",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 2,
+    "type": "daily",
+    "icon": "🚴",
+    "title": "完成1次10公里骑行",
+    "description": "骑自行车锻炼身体",
+    "reward": 10,
+    "timeEstimate": "30分钟",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 3,
+    "type": "daily",
+    "icon": "📚",
+    "title": "阅读30分钟",
+    "description": "认真阅读课外书",
+    "reward": 5,
+    "timeEstimate": "30分钟",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 4,
+    "type": "daily",
+    "icon": "🥗",
+    "title": "吃完所有蔬菜",
+    "description": "不挑食，营养均衡",
+    "reward": 2,
+    "timeEstimate": "",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 5,
+    "type": "challenge",
+    "icon": "🎵",
+    "title": "练习钢琴1小时",
+    "description": "完成本周的钢琴练习",
+    "reward": 8,
+    "timeEstimate": "60分钟",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 6,
+    "type": "daily",
+    "icon": "🛏️",
+    "title": "自己叠被子",
+    "description": "起床后整理床铺",
+    "reward": 2,
+    "timeEstimate": "3分钟",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 7,
+    "type": "chore",
+    "icon": "🍽️",
+    "title": "帮忙洗碗",
+    "description": "饭后帮助家人洗碗",
+    "reward": 4,
+    "timeEstimate": "10分钟",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 8,
+    "type": "challenge",
+    "icon": "🧮",
+    "title": "完成数学练习题",
+    "description": "认真完成10道数学题",
+    "reward": 6,
+    "timeEstimate": "20分钟",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 9,
+    "type": "daily",
+    "icon": "🦷",
+    "title": "早晚刷牙",
+    "description": "保护牙齿健康",
+    "reward": 1,
+    "timeEstimate": "5分钟",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  },
+  {
+    "id": 10,
+    "type": "chore",
+    "icon": "🗑️",
+    "title": "倒垃圾",
+    "description": "帮忙把垃圾拿到楼下",
+    "reward": 3,
+    "timeEstimate": "5分钟",
+    "isActive": true,
+    "createdAt": "2025-11-15T08:00:00Z"
+  }
+]
+

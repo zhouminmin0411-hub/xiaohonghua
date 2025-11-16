@@ -1,0 +1,73 @@
+<!--每周积分配置页面-->
+<view class="container">
+  <view class="header">
+    <view class="header-title">每周积分配置</view>
+    <view class="header-desc">每周自动为孩子发放固定积分</view>
+  </view>
+
+  <view class="config-section">
+    <view class="config-card">
+      <van-cell-group>
+        <van-field
+          label="每周积分"
+          value="{{config.weeklyAmount}}"
+          placeholder="请输入每周发放积分数"
+          type="number"
+          bind:change="onAmountChange"
+        />
+
+        <van-cell
+          title="发放星期"
+          value="{{weekDayMap[config.dayOfWeek]}}"
+          is-link
+          bind:tap="showDayPicker"
+        />
+
+        <van-cell
+          title="发放时间"
+          value="{{config.time}}"
+          is-link
+          bind:tap="showTimePicker"
+        />
+
+        <van-cell title="启用状态">
+          <van-switch
+            checked="{{config.enabled}}"
+            bind:change="onSwitchChange"
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <view class="save-btn" bind:tap="saveConfig">
+        保存配置
+      </view>
+    </view>
+
+    <view class="tips-card">
+      <view class="tips-title">💡 温馨提示</view>
+      <view class="tips-item">• 每周固定时间自动发放，无需手动操作</view>
+      <view class="tips-item">• 修改配置后，从下次发放时间生效</view>
+      <view class="tips-item">• 关闭后将停止自动发放</view>
+      <view class="tips-item">• 建议设置在孩子起床后的时间</view>
+    </view>
+  </view>
+
+  <!-- 星期选择器 -->
+  <van-popup show="{{showDayPopup}}" position="bottom">
+    <van-picker
+      columns="{{dayColumns}}"
+      bind:confirm="onDayConfirm"
+      bind:cancel="onDayCancel"
+    />
+  </van-popup>
+
+  <!-- 时间选择器 -->
+  <van-popup show="{{showTimePopup}}" position="bottom">
+    <van-datetime-picker
+      type="time"
+      value="{{timeValue}}"
+      bind:confirm="onTimeConfirm"
+      bind:cancel="onTimeCancel"
+    />
+  </van-popup>
+</view>

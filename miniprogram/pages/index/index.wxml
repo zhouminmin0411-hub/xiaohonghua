@@ -1,0 +1,150 @@
+<!--小朋友首页-->
+<view class="page">
+  <!-- 英雄区域 -->
+  <view class="hero">
+    <view class="hero-top">
+      <view class="brand">
+        <text class="brand-label">小红花</text>
+        <text class="brand-subtitle">{{greeting}}</text>
+      </view>
+      <view class="settings-entry" bind:tap="onOpenSettings" hover-class="pressed">
+        <text class="settings-icon">⚙️</text>
+      </view>
+    </view>
+
+    <view class="flower-counter">
+      <view class="counter-left">
+        <view class="flower-emblem">🌸</view>
+        <view class="counter-info">
+          <text class="counter-label">当前小红花</text>
+          <text class="counter-value">{{currentPoints}}</text>
+        </view>
+      </view>
+      <view class="counter-flash">
+        <text>继续保持好状态！</text>
+      </view>
+    </view>
+
+    <view class="hero-metas">
+      <view class="meta-card">
+        <text class="meta-label">今日任务</text>
+        <text class="meta-value">{{tasks.length}}</text>
+      </view>
+      <view class="meta-card">
+        <text class="meta-label">可领奖励</text>
+        <text class="meta-value">+{{totalReward}}🌸</text>
+      </view>
+      <view class="meta-card">
+        <text class="meta-label">已完成</text>
+        <text class="meta-value">{{completedCount}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 任务列表 -->
+  <view class="tasks-section">
+    <view class="section-title">
+      <text>今日任务待你探索</text>
+    </view>
+    
+    <view wx:if="{{tasks.length === 0}}" class="empty-state">
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">暂无任务</text>
+    </view>
+    
+    <view wx:else class="task-list">
+      <view 
+        wx:for="{{tasks}}" 
+        wx:key="id" 
+        class="task-card {{item.status === 'received' ? 'task-received' : ''}} {{item.status === 'completed' ? 'task-completed' : ''}}"
+      >
+        <view class="task-card-body">
+          <view class="task-icon">{{item.icon}}</view>
+          <view class="task-content">
+            <view class="task-title-row">
+              <text class="task-title">{{item.title}}</text>
+              <view class="task-tag">
+                {{item.type === 'challenge' ? '挑战任务' : item.type === 'daily' ? '每日习惯' : '家务任务'}}
+              </view>
+            </view>
+            <view class="task-meta-row">
+              <view class="task-duration" wx:if="{{item.timeEstimate}}">
+                <text class="meta-dot"></text>{{item.timeEstimate}}
+              </view>
+              <view class="task-reward-pill">+{{item.reward}} 小红花</view>
+            </view>
+            <view class="task-description">{{item.description ? item.description : '完成后让家里更棒！'}}</view>
+          </view>
+        </view>
+
+        <view class="task-action-wrapper">
+          <view 
+            wx:if="{{item.status === 'available'}}"
+            class="task-action-btn task-btn-warning"
+            bind:tap="onReceiveTask"
+            data-id="{{item.id}}"
+            id="task-btn-{{item.id}}"
+          >
+            接取任务
+          </view>
+          <view 
+            wx:elif="{{item.status === 'received'}}"
+            class="task-action-btn task-btn-primary"
+            bind:tap="onCompleteTask"
+            data-id="{{item.id}}"
+            data-reward="{{item.reward}}"
+            data-title="{{item.title}}"
+            id="task-btn-{{item.id}}"
+          >
+            我完成啦！
+          </view>
+          <view wx:else class="completed-inline">
+            <text class="status-pill status-completed">✓ 已完成</text>
+            <text wx:if="{{item.parentLikedAt}}" class="status-pill status-liked">❤️ 已点赞</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 自定义浮动导航 -->
+  <view class="floating-nav {{floatingNavHidden ? 'floating-nav-hidden' : ''}}">
+    <view 
+      class="nav-item active" 
+      data-path="/pages/index/index" 
+      bind:tap="onNavigateTab"
+    >
+      <view class="nav-icon">🏡</view>
+      <text>首页</text>
+    </view>
+    <view 
+      class="nav-item" 
+      data-path="/pages/rewards/rewards" 
+      bind:tap="onNavigateTab"
+    >
+      <view class="nav-icon">🎁</view>
+      <text>积分商城</text>
+    </view>
+    <view 
+      class="nav-item" 
+      data-path="/pages/settings/settings" 
+      bind:tap="onNavigateTab"
+    >
+      <view class="nav-icon">⚙️</view>
+      <text>设置</text>
+    </view>
+  </view>
+
+  <!-- 小红花飞入动画 -->
+  <view 
+    wx:if="{{showFlowerAnimation}}" 
+    class="flower-animation"
+    style="left: {{flowerX}}px; top: {{flowerY}}px;"
+    animation="{{flowerAnimationData}}"
+  >
+    🌸
+  </view>
+
+  <!-- Toast提示 -->
+  <van-toast id="van-toast" />
+</view>

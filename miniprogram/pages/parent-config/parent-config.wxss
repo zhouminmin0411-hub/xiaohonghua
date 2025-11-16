@@ -1,0 +1,10 @@
+.container {
+  min-height: 100vh;
+  background: #F9F9F9;
+  padding: 32rpx;
+}
+
+.save-button {
+  margin-top: 48rpx;
+}
+

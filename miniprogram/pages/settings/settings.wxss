@@ -1,0 +1,124 @@
+/* 设置页面样式 */
+
+.container {
+  min-height: 100vh;
+  background: #F9F9F9;
+}
+
+/* 用户信息 */
+.user-info {
+  background: linear-gradient(135deg, #FF5A5A 0%, #FF8787 100%);
+  padding: 60rpx 32rpx 80rpx;
+  text-align: center;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.9);
+  margin-bottom: 16rpx;
+}
+
+.nickname {
+  color: white;
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 12rpx;
+}
+
+.role-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8rpx 24rpx;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+}
+
+/* 设置区域 */
+.settings-section {
+  margin-top: -40rpx;
+  padding: 0 32rpx;
+}
+
+/* 密码对话框 */
+.password-dialog {
+  width: 600rpx;
+  padding: 48rpx 32rpx 32rpx;
+}
+
+.dialog-title {
+  text-align: center;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 48rpx;
+}
+
+/* 密码输入区域 */
+.password-input-area {
+  margin-bottom: 48rpx;
+}
+
+.password-dots {
+  display: flex;
+  justify-content: center;
+  gap: 32rpx;
+}
+
+.password-dot {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 24rpx;
+  border: 2rpx solid #EAEAEA;
+  background: white;
+  transition: all 0.2s;
+}
+
+.password-dot.filled {
+  background: #FF5A5A;
+  border-color: #FF5A5A;
+}
+
+/* 密码键盘 */
+.password-keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.keyboard-row {
+  display: flex;
+  gap: 16rpx;
+}
+
+.key {
+  flex: 1;
+  height: 96rpx;
+  background: #F9F9F9;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  color: #333;
+  transition: all 0.2s;
+}
+
+.key:active {
+  background: #EAEAEA;
+  transform: scale(0.95);
+}
+
+.key.empty {
+  background: transparent;
+}
+
+.key.delete {
+  background: #FFE8E8;
+  color: #FF5A5A;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+

@@ -1,0 +1,115 @@
+<!--家长首页-->
+<view class="container">
+  <!-- 头部统计 -->
+  <view class="header">
+    <view class="stats-card">
+      <view class="stat-item">
+        <text class="stat-label">本周完成</text>
+        <text class="stat-value">{{weeklyCompleted}}</text>
+        <text class="stat-unit">个任务</text>
+      </view>
+      <view class="divider"></view>
+      <view class="stat-item">
+        <text class="stat-label">当前积分</text>
+        <text class="stat-value">{{currentPoints}}</text>
+        <text class="stat-unit">小红花</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能入口 -->
+  <view class="function-section">
+    <view class="section-title">管理功能</view>
+    <view class="function-grid">
+      <view class="function-item" bind:tap="onNavigateTo" data-url="/pages/parent-tasks/parent-tasks">
+        <view class="function-icon">📋</view>
+        <view class="function-name">任务管理</view>
+      </view>
+      <view class="function-item" bind:tap="onNavigateTo" data-url="/pages/parent-rewards/parent-rewards">
+        <view class="function-icon">🎁</view>
+        <view class="function-name">奖励管理</view>
+      </view>
+      <view class="function-item" bind:tap="onShowAdjustDialog">
+        <view class="function-icon">⚖️</view>
+        <view class="function-name">积分调整</view>
+      </view>
+      <view class="function-item" bind:tap="onNavigateTo" data-url="/pages/parent-config/parent-config">
+        <view class="function-icon">⚙️</view>
+        <view class="function-name">每周配置</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最近完成的任务 -->
+  <view class="records-section">
+    <view class="section-title">孩子最近完成的任务</view>
+
+    <view wx:if="{{records.length === 0}}" class="empty-state">
+      <text class="empty-icon">📝</text>
+      <text class="empty-text">暂无记录</text>
+    </view>
+
+    <view wx:else class="record-list">
+      <view 
+        wx:for="{{records}}" 
+        wx:key="id"
+        class="record-card"
+      >
+        <view class="record-icon">{{item.taskIcon}}</view>
+        <view class="record-info">
+          <view class="record-title">{{item.taskTitle}}</view>
+          <view class="record-time">{{item.completedAt}}</view>
+        </view>
+        <view class="record-reward">+{{item.reward}}</view>
+        <view class="record-action">
+          <van-button
+            wx:if="{{!item.parentLikedAt}}"
+            type="primary"
+            size="mini"
+            round
+            icon="like-o"
+            bind:tap="onLikeTask"
+            data-id="{{item.id}}"
+          >
+            点赞
+          </van-button>
+          <view wx:else class="liked-tag">
+            <text>❤️ 已点赞</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 积分调整对话框 -->
+  <van-dialog
+    use-slot
+    title="积分调整"
+    show="{{ showAdjustDialog }}"
+    show-cancel-button
+    confirm-button-text="确定"
+    cancel-button-text="取消"
+    bind:close="onAdjustDialogClose"
+    bind:confirm="onConfirmAdjust"
+  >
+    <view class="adjust-dialog-content">
+      <van-field
+        value="{{ adjustAmount }}"
+        type="number"
+        label="调整数值"
+        placeholder="输入正数增加，负数减少"
+        bind:change="onAdjustAmountChange"
+      />
+      <van-field
+        value="{{ adjustReason }}"
+        label="调整原因"
+        placeholder="例如：奖励表现优秀"
+        bind:change="onAdjustReasonChange"
+      />
+    </view>
+  </van-dialog>
+
+  <!-- Toast -->
+  <van-toast id="van-toast" />
+</view>
+

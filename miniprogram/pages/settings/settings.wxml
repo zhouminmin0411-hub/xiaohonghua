@@ -1,0 +1,76 @@
+<!--设置页面-->
+<view class="container">
+  <!-- 用户信息 -->
+  <view class="user-info">
+    <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+    <view class="nickname">{{userInfo.nickname}}</view>
+    <view class="role-badge">{{isParentMode ? '家长模式' : '小朋友模式'}}</view>
+  </view>
+
+  <!-- 设置列表 -->
+  <view class="settings-section">
+    <van-cell-group>
+      <van-cell 
+        title="切换至家长视角" 
+        is-link 
+        bind:click="onSwitchToParent"
+        wx:if="{{!isParentMode}}"
+      />
+      <van-cell 
+        title="退出家长视角" 
+        is-link 
+        bind:click="onExitParentMode"
+        wx:else
+      />
+      <van-cell title="关于小红花" is-link bind:click="onAbout" />
+    </van-cell-group>
+  </view>
+
+  <!-- 密码输入弹窗 -->
+  <van-popup 
+    show="{{ showPasswordDialog }}" 
+    bind:close="onClosePasswordDialog"
+    closeable
+    round
+    position="center"
+  >
+    <view class="password-dialog">
+      <view class="dialog-title">输入家长密码</view>
+      <view class="password-input-area">
+        <view class="password-dots">
+          <view 
+            wx:for="{{4}}" 
+            wx:key="index"
+            class="password-dot {{password.length > index ? 'filled' : ''}}"
+          ></view>
+        </view>
+      </view>
+      <view class="password-keyboard">
+        <view class="keyboard-row">
+          <view class="key" bind:tap="onKeyPress" data-key="1">1</view>
+          <view class="key" bind:tap="onKeyPress" data-key="2">2</view>
+          <view class="key" bind:tap="onKeyPress" data-key="3">3</view>
+        </view>
+        <view class="keyboard-row">
+          <view class="key" bind:tap="onKeyPress" data-key="4">4</view>
+          <view class="key" bind:tap="onKeyPress" data-key="5">5</view>
+          <view class="key" bind:tap="onKeyPress" data-key="6">6</view>
+        </view>
+        <view class="keyboard-row">
+          <view class="key" bind:tap="onKeyPress" data-key="7">7</view>
+          <view class="key" bind:tap="onKeyPress" data-key="8">8</view>
+          <view class="key" bind:tap="onKeyPress" data-key="9">9</view>
+        </view>
+        <view class="keyboard-row">
+          <view class="key empty"></view>
+          <view class="key" bind:tap="onKeyPress" data-key="0">0</view>
+          <view class="key delete" bind:tap="onDeleteKey">←</view>
+        </view>
+      </view>
+    </view>
+  </van-popup>
+
+  <!-- Toast -->
+  <van-toast id="van-toast" />
+</view>
+
