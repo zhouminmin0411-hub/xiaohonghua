@@ -1,5 +1,6 @@
 // pages/parent/weekly/weekly.js
-const mockApi = require('../../../utils/mockApi')
+const api = require('../../../utils/realApi')
+const app = getApp()
 
 Page({
   data: {
@@ -19,7 +20,7 @@ Page({
       4: '周四',
       5: '周五',
       6: '周六',
-      0: '周日'
+      7: '周日'
     },
     dayColumns: [
       { text: '周一', value: 1 },
@@ -28,23 +29,26 @@ Page({
       { text: '周四', value: 4 },
       { text: '周五', value: 5 },
       { text: '周六', value: 6 },
-      { text: '周日', value: 0 }
+      { text: '周日', value: 7 }
     ]
   },
 
-  onLoad() {
+  async onLoad() {
+    await app.ensureReady()
     this.loadConfig()
   },
 
   async loadConfig() {
+    const childId = app.globalData.childId
+    if (!childId) {
+      return
+    }
     try {
-      const result = await mockApi.getWeeklyConfig()
-      if (result.success) {
-        this.setData({
-          config: result.data,
-          timeValue: result.data.time
-        })
-      }
+      const result = await api.getWeeklyConfig(childId)
+      this.setData({
+        config: result,
+        timeValue: result.time
+      })
     } catch (e) {
       console.error('加载配置失败', e)
     }
@@ -113,13 +117,12 @@ Page({
     }
 
     try {
-      const result = await mockApi.updateWeeklyConfig(config)
-      if (result.success) {
-        wx.showToast({
-          title: '保存成功',
-          icon: 'success'
-        })
-      }
+      const childId = app.globalData.childId
+      await api.updateWeeklyConfig(childId, config)
+      wx.showToast({
+        title: '保存成功',
+        icon: 'success'
+      })
     } catch (e) {
       wx.showToast({
         title: '保存失败',

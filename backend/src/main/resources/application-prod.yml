@@ -1,0 +1,23 @@
+# 生产环境配置
+spring:
+  datasource:
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+
+logging:
+  level:
+    root: INFO
+    com.xiaohonghua: INFO
+  file:
+    name: /var/log/xiaohonghua/application.log
+    max-size: 10MB
+    max-history: 30
+
+# 生产环境关闭Swagger
+knife4j:
+  enable: false
+

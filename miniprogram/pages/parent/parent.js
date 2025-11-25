@@ -1,5 +1,6 @@
 // 家长首页
-const mockApi = require('../../utils/mockApi')
+const api = require('../../utils/realApi')
+const dateUtil = require('../../utils/date')
 const app = getApp()
 
 Page({
@@ -36,37 +37,38 @@ Page({
 
   // 加载数据
   async loadData() {
+    await app.ensureReady()
     this.loadRecords()
+    const points = await app.refreshPoints()
     this.setData({
-      currentPoints: app.globalData.currentPoints
+      currentPoints: points
     })
   },
 
   // 加载任务记录
   async loadRecords() {
+    await app.ensureReady()
+    const childId = app.globalData.childId
+    if (!childId) return
     try {
-      const res = await mockApi.getTaskRecords()
-      if (res.success) {
-        // 计算本周完成数
-        const now = new Date()
-        const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay())
-        
-        const weeklyCompleted = res.data.filter(record => {
-          const completedDate = new Date(record.completedAt)
-          return completedDate >= weekStart
-        }).length
+      const records = await api.getTaskRecords(childId, 'completed')
+      const now = new Date()
+      const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay())
+      
+      const weeklyCompleted = records.filter(record => {
+        const completedDate = dateUtil.parseDateTime(record.completedAt)
+        return completedDate && completedDate >= weekStart
+      }).length
 
-        // 格式化时间
-        const formattedRecords = res.data.map(record => ({
-          ...record,
-          completedAt: this.formatTime(record.completedAt)
-        }))
+      const formattedRecords = records.map(record => ({
+        ...record,
+        completedAt: this.formatTime(record.completedAt)
+      }))
 
-        this.setData({
-          records: formattedRecords.slice(0, 10), // 只显示最近10条
-          weeklyCompleted
-        })
-      }
+      this.setData({
+        records: formattedRecords.slice(0, 10),
+        weeklyCompleted
+      })
     } catch (e) {
       console.error('加载记录失败', e)
     }
@@ -74,7 +76,8 @@ Page({
 
   // 格式化时间
   formatTime(isoString) {
-    const date = new Date(isoString)
+    const date = dateUtil.parseDateTime(isoString)
+    if (!date) return ''
     const now = new Date()
     const diffMs = now - date
     const diffMins = Math.floor(diffMs / 60000)
@@ -149,24 +152,26 @@ Page({
     }
 
     try {
-      const res = await mockApi.adjustPoints(amount, adjustReason || '家长积分调整')
-
-      if (res.success) {
-        this.setData({
-          currentPoints: res.data.currentPoints,
-          showAdjustDialog: false
-        })
-
+      const childId = app.globalData.childId
+      if (!childId) {
         wx.showToast({
-          title: '调整成功',
-          icon: 'success'
-        })
-      } else {
-        wx.showToast({
-          title: res.message,
+          title: '未获取到孩子信息',
           icon: 'none'
         })
+        return
       }
+      await api.adjustPoints(childId, amount, adjustReason || '家长积分调整')
+
+      const points = await app.refreshPoints()
+      this.setData({
+        currentPoints: points,
+        showAdjustDialog: false
+      })
+
+      wx.showToast({
+        title: '调整成功',
+        icon: 'success'
+      })
     } catch (e) {
       console.error('积分调整失败', e)
       wx.showToast({
@@ -181,22 +186,15 @@ Page({
     const recordId = e.currentTarget.dataset.id
 
     try {
-      const res = await mockApi.likeTask(recordId)
+      await api.likeTask(recordId)
 
-      if (res.success) {
-        wx.showToast({
-          title: '点赞成功！',
-          icon: 'success'
-        })
+      wx.showToast({
+        title: '点赞成功！',
+        icon: 'success'
+      })
 
-        // 刷新列表
-        this.loadRecords()
-      } else {
-        wx.showToast({
-          title: res.message,
-          icon: 'none'
-        })
-      }
+      // 刷新列表
+      this.loadRecords()
     } catch (e) {
       console.error('点赞失败', e)
       wx.showToast({

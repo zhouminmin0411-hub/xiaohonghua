@@ -1,5 +1,5 @@
 // 设置页面
-const mockApi = require('../../utils/mockApi')
+const api = require('../../utils/realApi')
 const app = getApp()
 
 Page({
@@ -13,9 +13,12 @@ Page({
     password: ''
   },
 
-  onLoad() {
-    // 加载用户信息
+  async onLoad() {
+    await app.ensureReady()
     this.loadUserInfo()
+    this.setData({
+      isParentMode: app.globalData.isParentMode
+    })
   },
 
   onShow() {
@@ -27,11 +30,20 @@ Page({
 
   // 加载用户信息
   loadUserInfo() {
+    const userInfo = app.globalData.userInfo
+    if (userInfo) {
+      this.setData({
+        userInfo
+      })
+      return
+    }
+    
     try {
-      const userInfo = wx.getStorageSync('userInfo')
-      if (userInfo) {
+      const cached = wx.getStorageSync('userInfo')
+      if (cached) {
+        const parsed = typeof cached === 'string' ? JSON.parse(cached) : cached
         this.setData({
-          userInfo: JSON.parse(userInfo)
+          userInfo: parsed
         })
       }
     } catch (e) {
@@ -82,42 +94,33 @@ Page({
 
   // 验证密码
   async verifyPassword(password) {
+    await app.ensureReady()
+    const userId = app.globalData.parentUserId || app.globalData.userInfo?.id || 2
     try {
-      const res = await mockApi.verifyParentPassword(password)
+      await api.verifyParentPassword(userId, password)
 
-      if (res.success) {
-        // 验证成功
-        app.switchToParentMode()
-        this.setData({
-          showPasswordDialog: false,
-          password: '',
-          isParentMode: true
-        })
+      app.switchToParentMode()
+      this.setData({
+        showPasswordDialog: false,
+        password: '',
+        isParentMode: true
+      })
 
-        wx.showToast({
-          title: '欢迎回来',
-          icon: 'success',
-          duration: 1500
-        })
+      wx.showToast({
+        title: '欢迎回来',
+        icon: 'success',
+        duration: 1500
+      })
 
-        // 跳转到家长首页
-        setTimeout(() => {
-          wx.reLaunch({
-            url: '/pages/parent/home/home'
-          })
-        }, 1500)
-      } else {
-        // 密码错误
-        wx.showToast({
-          title: '密码错误',
-          icon: 'none'
+      setTimeout(() => {
+        wx.reLaunch({
+          url: '/pages/parent/home/home'
         })
-        this.setData({ password: '' })
-      }
+      }, 1500)
     } catch (e) {
       console.error('验证密码失败', e)
       wx.showToast({
-        title: '验证失败',
+        title: e?.message || '验证失败',
         icon: 'none'
       })
       this.setData({ password: '' })

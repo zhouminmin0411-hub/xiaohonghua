@@ -1,0 +1,75 @@
+DROP TABLE IF EXISTS point_history;
+DROP TABLE IF EXISTS reward_record;
+DROP TABLE IF EXISTS reward;
+DROP TABLE IF EXISTS task_record;
+DROP TABLE IF EXISTS task;
+DROP TABLE IF EXISTS `user`;
+
+CREATE TABLE `user` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  openid VARCHAR(64),
+  role VARCHAR(20),
+  parent_password VARCHAR(128),
+  nickname VARCHAR(64),
+  avatar_url VARCHAR(255),
+  child_id BIGINT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE task (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  type VARCHAR(32),
+  icon VARCHAR(64),
+  title VARCHAR(128),
+  description VARCHAR(255),
+  reward INT,
+  time_estimate VARCHAR(32),
+  created_by_parent_id BIGINT,
+  is_active BOOLEAN,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE task_record (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  task_id BIGINT NOT NULL,
+  child_id BIGINT NOT NULL,
+  status VARCHAR(20),
+  reward INT,
+  received_at TIMESTAMP,
+  completed_at TIMESTAMP,
+  parent_liked_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE point_history (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  child_id BIGINT NOT NULL,
+  change INT NOT NULL,
+  reason VARCHAR(255),
+  source_type VARCHAR(32),
+  source_id BIGINT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE reward (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(128) NOT NULL,
+  cost INT NOT NULL,
+  icon VARCHAR(64),
+  type VARCHAR(32),
+  is_active BOOLEAN,
+  created_by_parent_id BIGINT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE reward_record (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  reward_id BIGINT NOT NULL,
+  child_id BIGINT NOT NULL,
+  cost INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

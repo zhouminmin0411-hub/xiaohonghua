@@ -1,5 +1,6 @@
 // pages/parent/home/home.js
-const mockApi = require('../../../utils/mockApi')
+const api = require('../../../utils/realApi')
+const dateUtil = require('../../../utils/date')
 const app = getApp()
 
 Page({
@@ -12,12 +13,14 @@ Page({
     completedTasks: []
   },
 
-  onLoad() {
+  async onLoad() {
+    await app.ensureReady()
     this.loadWeeklyStats()
     this.loadCompletedTasks()
   },
 
-  onShow() {
+  async onShow() {
+    await app.ensureReady()
     // 每次显示时刷新数据
     this.loadWeeklyStats()
     this.loadCompletedTasks()
@@ -25,19 +28,20 @@ Page({
 
   // 加载本周统计数据
   async loadWeeklyStats() {
+    await app.ensureReady()
+    const childId = app.globalData.childId
+    if (!childId) {
+      return
+    }
     try {
-      // 获取本周开始时间
       const weekStart = this.getWeekStart()
-      
-      // 获取任务记录
-      const records = wx.getStorageSync('taskRecords') || []
-      const weeklyRecords = records.filter(r => {
-        if (r.status !== 'completed' || !r.completedAt) return false
-        const completedTime = new Date(r.completedAt)
-        return completedTime >= weekStart
+      const records = await api.getTaskRecords(childId, 'completed')
+      const weeklyRecords = records.filter(record => {
+        if (!record.completedAt) return false
+        const completedDate = dateUtil.parseDateTime(record.completedAt)
+        return completedDate && completedDate >= weekStart
       })
 
-      // 计算统计数据
       const completedCount = weeklyRecords.length
       const totalPoints = weeklyRecords.reduce((sum, r) => sum + (r.reward || 0), 0)
       const likedCount = weeklyRecords.filter(r => r.parentLikedAt).length
@@ -66,17 +70,22 @@ Page({
 
   // 加载已完成任务列表
   async loadCompletedTasks() {
+    await app.ensureReady()
+    const childId = app.globalData.childId
+    if (!childId) {
+      return
+    }
     try {
-      const result = await mockApi.getTaskRecords()
-      if (result.success) {
-        const tasks = result.data.map(task => ({
+      const result = await api.getTaskRecords(childId, 'completed')
+      const tasks = result
+        .sort((a, b) => dateUtil.getTimestamp(b.completedAt || b.updatedAt || b.createdAt) - dateUtil.getTimestamp(a.completedAt || a.updatedAt || a.createdAt))
+        .map(task => ({
           ...task,
           completedTime: this.formatTime(task.completedAt)
         }))
-        this.setData({
-          completedTasks: tasks
-        })
-      }
+      this.setData({
+        completedTasks: tasks.slice(0, 10)
+      })
     } catch (e) {
       console.error('加载完成任务失败', e)
     }
@@ -84,7 +93,8 @@ Page({
 
   // 格式化时间
   formatTime(isoString) {
-    const date = new Date(isoString)
+    const date = dateUtil.parseDateTime(isoString)
+    if (!date) return ''
     const month = date.getMonth() + 1
     const day = date.getDate()
     const hour = date.getHours()
@@ -96,20 +106,17 @@ Page({
   async onLikeTask(e) {
     const { id } = e.currentTarget.dataset
     try {
-      const result = await mockApi.likeTask(id)
-      if (result.success) {
-        wx.showToast({
-          title: '点赞成功！',
-          icon: 'success'
-        })
-        // 刷新列表
-        this.loadCompletedTasks()
-        this.loadWeeklyStats()
-      }
+      await api.likeTask(id)
+      wx.showToast({
+        title: '点赞成功！',
+        icon: 'success'
+      })
+      this.loadCompletedTasks()
+      this.loadWeeklyStats()
     } catch (e) {
       wx.showToast({
-        title: '点赞失败',
-        icon: 'error'
+        title: '操作失败',
+        icon: 'none'
       })
     }
   },
@@ -158,4 +165,3 @@ Page({
     })
   }
 })
-

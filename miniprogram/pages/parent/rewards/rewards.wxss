@@ -1,2 +1,130 @@
-/* 家长奖励管理页面 - 复用任务管理页面样式 */
+/* 家长奖励管理页面 */
 @import "../tasks/tasks.wxss";
+
+.rewards-section {
+  padding: 32rpx;
+}
+
+.section-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.section-title {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.section-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #6B5744;
+}
+
+.section-tip {
+  font-size: 24rpx;
+  color: #9B8570;
+}
+
+.count-pill {
+  background: #F1E8DD;
+  color: #6B5744;
+  padding: 8rpx 20rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.reward-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.reward-item {
+  background: white;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 12rpx rgba(107, 87, 68, 0.08);
+}
+
+.reward-main {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.reward-icon {
+  font-size: 72rpx;
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFF6D9;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+}
+
+.reward-info {
+  flex: 1;
+}
+
+.reward-name {
+  font-size: 32rpx;
+  color: #6B5744;
+  font-weight: 700;
+  margin-bottom: 12rpx;
+}
+
+.reward-meta {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.reward-type {
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  background: #F4E9DA;
+  color: #8B7355;
+}
+
+.type-virtual {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.type-physical {
+  background: #FFF0E1;
+  color: #D97706;
+}
+
+.reward-cost {
+  color: #E07A5F;
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.reward-actions {
+  display: flex;
+  gap: 16rpx;
+  justify-content: flex-end;
+}
+
+.empty-state {
+  padding: 140rpx 32rpx;
+}
+
+.empty-icon {
+  opacity: 0.35;
+}

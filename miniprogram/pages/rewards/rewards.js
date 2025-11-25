@@ -1,5 +1,5 @@
 // 积分商城页面
-const mockApi = require('../../utils/mockApi')
+const api = require('../../utils/realApi')
 const animationUtil = require('../../utils/animation')
 const app = getApp()
 
@@ -13,7 +13,11 @@ Page({
     canvasHeight: 667
   },
 
-  onLoad() {
+  async onLoad() {
+    await app.ensureReady()
+    this.setData({
+      currentPoints: app.globalData.currentPoints
+    })
     this.loadRewards()
     
     // 获取屏幕尺寸
@@ -24,7 +28,8 @@ Page({
     })
   },
 
-  onShow() {
+  async onShow() {
+    await app.ensureReady()
     // 每次显示时更新积分
     this.setData({
       currentPoints: app.globalData.currentPoints
@@ -41,16 +46,15 @@ Page({
 
   // 加载奖励列表
   async loadRewards() {
+    await app.ensureReady()
     this.setData({ loading: true })
 
     try {
-      const res = await mockApi.getRewards()
-      if (res.success) {
-        this.setData({
-          rewards: res.data,
-          loading: false
-        })
-      }
+      const rewards = await api.getRewards()
+      this.setData({
+        rewards,
+        loading: false
+      })
     } catch (e) {
       console.error('加载奖励失败', e)
       this.setData({ loading: false })
@@ -66,6 +70,15 @@ Page({
     const id = Number(e.currentTarget.dataset.id)
     const title = e.currentTarget.dataset.title
     const cost = Number(e.currentTarget.dataset.cost)
+    const childId = app.globalData.childId
+
+    if (!childId) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      })
+      return
+    }
 
     if (this.data.currentPoints < cost) {
       wx.showToast({
@@ -91,33 +104,25 @@ Page({
     animationUtil.vibrate('medium')
 
     try {
-      const res = await mockApi.redeemReward(id)
+      await api.redeemReward(childId, id)
+      const points = await app.refreshPoints()
+      this.setData({
+        currentPoints: points
+      })
 
-      if (res.success) {
-        // 更新积分
-        this.setData({
-          currentPoints: res.data.currentPoints
-        })
+      // 播放粒子爆炸动画
+      this.playParticleAnimation()
 
-        // 播放粒子爆炸动画
-        this.playParticleAnimation()
+      wx.showToast({
+        title: '兑换成功！',
+        icon: 'success',
+        duration: 2000
+      })
 
-        wx.showToast({
-          title: '兑换成功！',
-          icon: 'success',
-          duration: 2000
-        })
-
-        // 刷新奖励列表
-        setTimeout(() => {
-          this.loadRewards()
-        }, 500)
-      } else {
-        wx.showToast({
-          title: res.message,
-          icon: 'none'
-        })
-      }
+      // 刷新奖励列表
+      setTimeout(() => {
+        this.loadRewards()
+      }, 500)
     } catch (e) {
       console.error('兑换奖励失败', e)
       wx.showToast({
@@ -201,6 +206,7 @@ Page({
 
   // 下拉刷新
   async onPullDownRefresh() {
+    await app.refreshPoints()
     await this.loadRewards()
     this.setData({
       currentPoints: app.globalData.currentPoints

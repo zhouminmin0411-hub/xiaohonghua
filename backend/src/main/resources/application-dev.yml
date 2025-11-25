@@ -1,0 +1,16 @@
+# 开发环境配置
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/xiaohonghua?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: xiaohonghua
+    password: soitsyou
+
+logging:
+  level:
+    com.xiaohonghua: DEBUG
+    com.baomidou.mybatisplus: DEBUG
+
+# 开发环境启用Swagger
+knife4j:
+  enable: true
+

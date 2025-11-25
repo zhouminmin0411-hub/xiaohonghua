@@ -1,5 +1,6 @@
 // pages/parent/rewards/rewards.js
-const mockApi = require('../../../utils/mockApi')
+const api = require('../../../utils/realApi')
+const app = getApp()
 
 Page({
   data: {
@@ -15,11 +16,11 @@ Page({
     },
     rewardTypeMap: {
       'virtual': '虚拟奖励',
-      'real': '实物奖励'
+      'physical': '实物奖励'
     },
     typeColumns: [
       { text: '虚拟奖励', value: 'virtual' },
-      { text: '实物奖励', value: 'real' }
+      { text: '实物奖励', value: 'physical' }
     ]
   },
 
@@ -33,14 +34,10 @@ Page({
 
   async loadRewards() {
     try {
-      const result = await mockApi.getRewards()
-      if (result.success) {
-        const customRewards = wx.getStorageSync('customRewards') || []
-        const allRewards = [...result.data, ...customRewards]
-        this.setData({
-          rewards: allRewards
-        })
-      }
+      const rewards = await api.getRewards()
+      this.setData({
+        rewards
+      })
     } catch (e) {
       console.error('加载奖励失败', e)
     }
@@ -81,14 +78,12 @@ Page({
       success: async (res) => {
         if (res.confirm) {
           try {
-            const result = await mockApi.deleteReward(id)
-            if (result.success) {
-              wx.showToast({
-                title: '删除成功',
-                icon: 'success'
-              })
-              this.loadRewards()
-            }
+            await api.deleteReward(id)
+            wx.showToast({
+              title: '删除成功',
+              icon: 'success'
+            })
+            this.loadRewards()
           } catch (e) {
             wx.showToast({
               title: '删除失败',
@@ -157,21 +152,23 @@ Page({
     }
 
     try {
-      let result
-      if (editingReward) {
-        result = await mockApi.updateReward(editingReward.id, formData)
-      } else {
-        result = await mockApi.createReward(formData)
+      const payload = {
+        ...formData,
+        createdByParentId: app.globalData.parentUserId || app.globalData.userInfo?.id || null
       }
 
-      if (result.success) {
-        wx.showToast({
-          title: editingReward ? '保存成功' : '创建成功',
-          icon: 'success'
-        })
-        this.hidePopup()
-        this.loadRewards()
+      if (editingReward) {
+        await api.updateReward(editingReward.id, payload)
+      } else {
+        await api.createReward(payload)
       }
+
+      wx.showToast({
+        title: editingReward ? '保存成功' : '创建成功',
+        icon: 'success'
+      })
+      this.hidePopup()
+      this.loadRewards()
     } catch (e) {
       wx.showToast({
         title: '操作失败',

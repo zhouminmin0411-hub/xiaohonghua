@@ -1,6 +1,7 @@
 // 小朋友首页
-const mockApi = require('../../utils/mockApi')
+const api = require('../../utils/realApi')
 const animationUtil = require('../../utils/animation')
+const dateUtil = require('../../utils/date')
 const app = getApp()
 
 Page({
@@ -18,12 +19,17 @@ Page({
     floatingNavHidden: false
   },
 
-  onLoad() {
+  async onLoad() {
+    await app.ensureReady()
+    this.setData({
+      currentPoints: app.globalData.currentPoints
+    })
     this.loadTasks()
     this.updateGreeting()
   },
 
-  onShow() {
+  async onShow() {
+    await app.ensureReady()
     // 每次显示时更新积分
     this.setData({
       currentPoints: app.globalData.currentPoints
@@ -41,17 +47,30 @@ Page({
 
   // 加载任务列表
   async loadTasks() {
+    await app.ensureReady()
+    const childId = app.globalData.childId
+    if (!childId) {
+      wx.showToast({
+        title: '未获取到用户信息',
+        icon: 'none'
+      })
+      return
+    }
+    
     this.setData({ loading: true })
     
     try {
-      const res = await mockApi.getTasks()
-      if (res.success) {
-        this.updateTaskSummary(res.data)
-        this.setData({
-          tasks: res.data,
-          loading: false
-        })
-      }
+      const [taskList, records] = await Promise.all([
+        api.getTasks(),
+        api.getTaskRecords(childId)
+      ])
+      
+      const tasks = this.mergeTaskStatus(taskList, records)
+      this.updateTaskSummary(tasks)
+      this.setData({
+        tasks,
+        loading: false
+      })
     } catch (e) {
       console.error('加载任务失败', e)
       this.setData({ loading: false })
@@ -123,28 +142,30 @@ Page({
   // 领取任务
   async onReceiveTask(e) {
     const taskId = Number(e.currentTarget.dataset.id)
+    const childId = app.globalData.childId
+    
+    if (!childId) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      })
+      return
+    }
     
     // 震动反馈
     animationUtil.vibrate('light')
     
     try {
-      const res = await mockApi.receiveTask(taskId)
+      await api.receiveTask(childId, taskId)
       
-      if (res.success) {
-        wx.showToast({
-          title: '任务已领取',
-          icon: 'success',
-          duration: 1500
-        })
-        
-        // 刷新任务列表
-        this.loadTasks()
-      } else {
-        wx.showToast({
-          title: res.message,
-          icon: 'none'
-        })
-      }
+      wx.showToast({
+        title: '任务已领取',
+        icon: 'success',
+        duration: 1500
+      })
+      
+      // 刷新数据
+      await this.loadTasks()
     } catch (e) {
       console.error('领取任务失败', e)
       wx.showToast({
@@ -157,7 +178,16 @@ Page({
   // 完成任务
   async onCompleteTask(e) {
     const id = Number(e.currentTarget.dataset.id)
+    const recordId = e.currentTarget.dataset.recordId
     const { reward, title } = e.currentTarget.dataset
+    
+    if (!recordId) {
+      wx.showToast({
+        title: '请先领取任务',
+        icon: 'none'
+      })
+      return
+    }
     
     // 获取按钮位置
     const query = wx.createSelectorQuery()
@@ -173,30 +203,21 @@ Page({
     animationUtil.vibrate('medium')
     
     try {
-      const res = await mockApi.completeTask(id)
+      await api.completeTask(recordId)
+      const points = await app.refreshPoints()
+      this.setData({
+        currentPoints: points
+      })
       
-      if (res.success) {
-        // 更新积分
-        this.setData({
-          currentPoints: res.data.currentPoints
-        })
-        
-        wx.showToast({
-          title: `完成啦！+${reward} 小红花`,
-          icon: 'success',
-          duration: 2000
-        })
-        
-        // 刷新任务列表
-        setTimeout(() => {
-          this.loadTasks()
-        }, 500)
-      } else {
-        wx.showToast({
-          title: res.message,
-          icon: 'none'
-        })
-      }
+      wx.showToast({
+        title: `完成啦！+${reward} 小红花`,
+        icon: 'success',
+        duration: 2000
+      })
+      
+      setTimeout(() => {
+        this.loadTasks()
+      }, 500)
     } catch (e) {
       console.error('完成任务失败', e)
       wx.showToast({
@@ -267,10 +288,44 @@ Page({
 
   // 下拉刷新
   async onPullDownRefresh() {
+    await app.ensureReady()
+    await app.refreshPoints()
     await this.loadTasks()
     this.setData({
       currentPoints: app.globalData.currentPoints
     })
     wx.stopPullDownRefresh()
+  },
+  
+  mergeTaskStatus(tasks = [], records = []) {
+    const recordMap = {}
+    records.forEach(record => {
+      const key = record.taskId
+      const current = recordMap[key]
+      const recordTime = this.getRecordTimestamp(record)
+      if (!current || recordTime > this.getRecordTimestamp(current)) {
+        recordMap[key] = record
+      }
+    })
+    
+    return tasks.map(task => {
+      const record = recordMap[task.id]
+      let status = 'available'
+      if (record) {
+        status = record.status === 'completed' ? 'completed' : 'received'
+      }
+      return {
+        ...task,
+        status,
+        recordId: record?.id || null,
+        parentLikedAt: record?.parentLikedAt || null
+      }
+    })
+  },
+  
+  getRecordTimestamp(record) {
+    if (!record) return 0
+    const time = record.completedAt || record.receivedAt || record.createdAt
+    return dateUtil.getTimestamp(time)
   }
 })

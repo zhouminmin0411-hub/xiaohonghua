@@ -9,6 +9,14 @@
   </view>
 
   <view class="rewards-section">
+    <view class="section-bar">
+      <view class="section-title">
+        <text class="section-name">奖励列表</text>
+        <text class="section-tip">整理孩子可兑换的奖励项</text>
+      </view>
+      <view class="count-pill">共 {{rewards.length}} 个</view>
+    </view>
+
     <view wx:if="{{rewards.length === 0}}" class="empty-state">
       <text class="empty-icon">🎁</text>
       <text class="empty-text">暂无奖励，点击上方按钮新建</text>
@@ -25,8 +33,10 @@
           <view class="reward-info">
             <view class="reward-name">{{item.title}}</view>
             <view class="reward-meta">
-              <view class="reward-type">{{rewardTypeMap[item.type]}}</view>
-              <view class="reward-cost">消耗：{{item.cost}} 小红花</view>
+              <view class="reward-type {{item.type === 'virtual' ? 'type-virtual' : 'type-physical'}}">
+                {{rewardTypeMap[item.type]}}
+              </view>
+              <view class="reward-cost">消耗 {{item.cost}} 小红花</view>
             </view>
           </view>
         </view>
@@ -44,7 +54,7 @@
   </view>
 
   <!-- 新建/编辑奖励弹窗 -->
-  <van-popup show="{{showPopup}}" position="bottom" custom-style="height: 70%; border-radius: 32rpx 32rpx 0 0;">
+  <van-popup show="{{showPopup}}" position="bottom" custom-style="height: 75%; border-radius: 32rpx 32rpx 0 0;">
     <view class="popup-content">
       <view class="popup-header">
         <view class="popup-title">{{editingReward ? '编辑奖励' : '新建奖励'}}</view>

@@ -1,5 +1,6 @@
 // pages/parent/tasks/tasks.js
-const mockApi = require('../../../utils/mockApi')
+const api = require('../../../utils/realApi')
+const app = getApp()
 
 Page({
   data: {
@@ -15,43 +16,41 @@ Page({
       reward: 3
     },
     taskTypeMap: {
-      'daily': '每日任务',
-      'challenge': '挑战任务',
-      'homework': '家务任务'
+      daily: '每日任务',
+      challenge: '挑战任务',
+      housework: '家务任务'
     },
     typeColumns: [
       { text: '每日任务', value: 'daily' },
       { text: '挑战任务', value: 'challenge' },
-      { text: '家务任务', value: 'homework' }
+      { text: '家务任务', value: 'housework' }
     ]
   },
 
-  onLoad() {
+  async onLoad() {
+    await app.ensureReady()
     this.loadTasks()
   },
 
-  onShow() {
+  async onShow() {
+    await app.ensureReady()
     this.loadTasks()
   },
 
-  // 加载任务列表
   async loadTasks() {
     try {
-      const result = await mockApi.getTasks()
-      if (result.success) {
-        // 显示所有任务，包括自定义任务
-        const customTasks = wx.getStorageSync('customTasks') || []
-        const allTasks = [...result.data, ...customTasks]
-        this.setData({
-          tasks: allTasks
-        })
-      }
-    } catch (e) {
-      console.error('加载任务失败', e)
+      await app.ensureReady()
+      const tasks = await api.getTasks()
+      this.setData({ tasks })
+    } catch (error) {
+      console.error('加载任务失败', error)
+      wx.showToast({
+        title: '加载失败',
+        icon: 'none'
+      })
     }
   },
 
-  // 显示新建任务弹窗
   showAddTask() {
     this.setData({
       editingTask: null,
@@ -66,7 +65,6 @@ Page({
     })
   },
 
-  // 编辑任务
   editTask(e) {
     const task = e.currentTarget.dataset.task
     this.setData({
@@ -82,35 +80,31 @@ Page({
     })
   },
 
-  // 删除任务
   deleteTask(e) {
     const { id } = e.currentTarget.dataset
     wx.showModal({
       title: '确认删除',
       content: '删除后任务将不再显示在孩子端',
       success: async (res) => {
-        if (res.confirm) {
-          try {
-            const result = await mockApi.deleteTask(id)
-            if (result.success) {
-              wx.showToast({
-                title: '删除成功',
-                icon: 'success'
-              })
-              this.loadTasks()
-            }
-          } catch (e) {
-            wx.showToast({
-              title: '删除失败',
-              icon: 'error'
-            })
-          }
+        if (!res.confirm) return
+        try {
+          await api.deleteTask(id)
+          wx.showToast({
+            title: '删除成功',
+            icon: 'success'
+          })
+          this.loadTasks()
+        } catch (error) {
+          console.error('删除任务失败', error)
+          wx.showToast({
+            title: '删除失败',
+            icon: 'error'
+          })
         }
       }
     })
   },
 
-  // 表单字段变化
   onIconChange(e) {
     this.setData({
       'formData.icon': e.detail
@@ -131,18 +125,16 @@ Page({
 
   onRewardChange(e) {
     this.setData({
-      'formData.reward': parseInt(e.detail) || 0
+      'formData.reward': parseInt(e.detail, 10) || 0
     })
   },
 
-  // 显示类型选择器
   showTypePicker() {
     this.setData({
       showTypePopup: true
     })
   },
 
-  // 类型选择确认
   onTypeConfirm(e) {
     this.setData({
       'formData.type': e.detail.value.value,
@@ -150,18 +142,15 @@ Page({
     })
   },
 
-  // 类型选择取消
   onTypeCancel() {
     this.setData({
       showTypePopup: false
     })
   },
 
-  // 提交任务
   async submitTask() {
     const { formData, editingTask } = this.data
 
-    // 验证
     if (!formData.title) {
       wx.showToast({
         title: '请输入任务名称',
@@ -179,24 +168,26 @@ Page({
     }
 
     try {
-      let result
-      if (editingTask) {
-        // 更新任务
-        result = await mockApi.updateTask(editingTask.id, formData)
-      } else {
-        // 创建任务
-        result = await mockApi.createTask(formData)
+      await app.ensureReady()
+      const payload = {
+        ...formData,
+        createdByParentId: app.globalData.parentUserId || app.globalData.userInfo?.id || null
       }
 
-      if (result.success) {
-        wx.showToast({
-          title: editingTask ? '保存成功' : '创建成功',
-          icon: 'success'
-        })
-        this.hidePopup()
-        this.loadTasks()
+      if (editingTask) {
+        await api.updateTask(editingTask.id, payload)
+      } else {
+        await api.createTask(payload)
       }
-    } catch (e) {
+
+      wx.showToast({
+        title: editingTask ? '保存成功' : '创建成功',
+        icon: 'success'
+      })
+      this.hidePopup()
+      this.loadTasks()
+    } catch (error) {
+      console.error('保存任务失败', error)
       wx.showToast({
         title: '操作失败',
         icon: 'error'
@@ -204,7 +195,6 @@ Page({
     }
   },
 
-  // 隐藏弹窗
   hidePopup() {
     this.setData({
       showPopup: false

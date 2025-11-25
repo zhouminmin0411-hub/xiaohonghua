@@ -92,6 +92,7 @@
             class="task-action-btn task-btn-primary"
             bind:tap="onCompleteTask"
             data-id="{{item.id}}"
+            data-record-id="{{item.recordId}}"
             data-reward="{{item.reward}}"
             data-title="{{item.title}}"
             id="task-btn-{{item.id}}"

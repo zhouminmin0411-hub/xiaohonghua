@@ -1,5 +1,6 @@
 // pages/parent/points/points.js
-const mockApi = require('../../../utils/mockApi')
+const api = require('../../../utils/realApi')
+const dateUtil = require('../../../utils/date')
 const app = getApp()
 
 Page({
@@ -20,35 +21,46 @@ Page({
     this.loadHistory()
   },
 
-  loadCurrentPoints() {
+  async loadCurrentPoints() {
+    await app.ensureReady()
+    const childId = app.globalData.childId
+    if (!childId) {
+      return
+    }
+    const points = await app.refreshPoints()
     this.setData({
-      currentPoints: app.globalData.currentPoints
+      currentPoints: points
     })
   },
 
   async loadHistory() {
+    await app.ensureReady()
+    const childId = app.globalData.childId
+    if (!childId) {
+      return
+    }
     try {
-      const result = await mockApi.getPointHistory()
-      if (result.success) {
-        const adjustmentHistory = result.data
-          .filter(item => item.sourceType === 'adjustment')
-          .map(item => ({
-            ...item,
-            time: this.formatTime(item.createdAt)
-          }))
-          .slice(0, 20)
+      const result = await api.getPointHistory(childId)
+      const adjustmentHistory = result
+        .sort((a, b) => dateUtil.getTimestamp(b.createdAt || b.updatedAt) - dateUtil.getTimestamp(a.createdAt || a.updatedAt))
+        .filter(item => item.sourceType === 'adjustment')
+        .map(item => ({
+          ...item,
+          time: this.formatTime(item.createdAt)
+        }))
+        .slice(0, 20)
 
-        this.setData({
-          history: adjustmentHistory
-        })
-      }
+      this.setData({
+        history: adjustmentHistory
+      })
     } catch (e) {
       console.error('加载历史失败', e)
     }
   },
 
   formatTime(isoString) {
-    const date = new Date(isoString)
+    const date = dateUtil.parseDateTime(isoString)
+    if (!date) return ''
     const month = date.getMonth() + 1
     const day = date.getDate()
     const hour = date.getHours()
@@ -110,27 +122,27 @@ Page({
       success: async (res) => {
         if (res.confirm) {
           try {
-            const result = await mockApi.adjustPoints(
+            const childId = app.globalData.childId
+            await api.adjustPoints(
+              childId,
               amount,
               adjustReason || `家长积分调整：${amount > 0 ? '+' : ''}${amount}`
             )
 
-            if (result.success) {
-              wx.showToast({
-                title: '调整成功',
-                icon: 'success'
-              })
+            wx.showToast({
+              title: '调整成功',
+              icon: 'success'
+            })
 
-              // 重置表单
-              this.setData({
-                adjustAmount: '',
-                adjustReason: ''
-              })
+            // 重置表单
+            this.setData({
+              adjustAmount: '',
+              adjustReason: ''
+            })
 
-              // 刷新数据
-              this.loadCurrentPoints()
-              this.loadHistory()
-            }
+            // 刷新数据
+            this.loadCurrentPoints()
+            this.loadHistory()
           } catch (e) {
             wx.showToast({
               title: '调整失败',

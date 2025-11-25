@@ -1,92 +1,93 @@
 // app.js
+const api = require('./utils/realApi')
+
 App({
-  onLaunch() {
+  async onLaunch() {
     console.log('小红花小程序启动')
     
-    // 初始化全局数据
     this.globalData = {
       userInfo: null,
+      childId: null,
+      parentUserId: 2, // 默认家长用户（seed数据）
       currentPoints: 0,
       token: null,
       isParentMode: false
     }
     
-    // 从本地存储加载用户数据
-    this.loadUserData()
-    
-    // 初始化积分
-    this.loadPoints()
+    this.readyPromise = this.initApp()
   },
   
-  loadUserData() {
+  async initApp() {
+    this.loadCachedData()
+    try {
+      await this.login()
+      await this.refreshPoints()
+    } catch (error) {
+      console.error('初始化失败', error)
+    }
+  },
+  
+  loadCachedData() {
     try {
       const userInfo = wx.getStorageSync('userInfo')
       const token = wx.getStorageSync('token')
+      const cachedPoints = wx.getStorageSync('currentPoints')
       
       if (userInfo) {
-        this.globalData.userInfo = JSON.parse(userInfo)
+        const parsed = typeof userInfo === 'string' ? JSON.parse(userInfo) : userInfo
+        this.globalData.userInfo = parsed
+        this.globalData.childId = parsed.role === 'child' ? parsed.id : parsed.childId
       }
       
       if (token) {
         this.globalData.token = token
       }
-    } catch (e) {
-      console.error('加载用户数据失败', e)
-    }
-  },
-  
-  loadPoints() {
-    try {
-      // 从本地存储加载积分历史
-      let pointHistory = wx.getStorageSync('pointHistory')
       
-      // 如果没有历史记录，初始化默认值
-      if (!pointHistory) {
-        // 初始化默认积分历史（Mock数据）
-        pointHistory = [
-          {
-            id: 1,
-            childId: 1,
-            change: 10,
-            reason: "每周固定积分",
-            sourceType: "weekly",
-            sourceId: null,
-            createdAt: "2025-11-11T09:00:00Z"
-          },
-          {
-            id: 2,
-            childId: 1,
-            change: 2,
-            reason: "完成任务：自己叠被子",
-            sourceType: "task",
-            sourceId: 3,
-            createdAt: "2025-11-15T07:05:00Z"
-          }
-        ]
-        // 保存到本地存储
-        wx.setStorageSync('pointHistory', pointHistory)
+      if (typeof cachedPoints === 'number') {
+        this.globalData.currentPoints = cachedPoints
       }
-      
-      // 计算总积分
-      const totalPoints = pointHistory.reduce((sum, record) => sum + record.change, 0)
-      this.globalData.currentPoints = Math.max(0, totalPoints)
-      
-      // 保存到本地存储
-      wx.setStorageSync('currentPoints', this.globalData.currentPoints)
-    } catch (e) {
-      console.error('加载积分失败', e)
-      this.globalData.currentPoints = 0
+    } catch (error) {
+      console.error('加载本地数据失败', error)
     }
   },
   
-  // 更新积分
-  updatePoints(change) {
-    this.globalData.currentPoints += change
-    if (this.globalData.currentPoints < 0) {
-      this.globalData.currentPoints = 0
+  async login() {
+    if (this.globalData.userInfo && this.globalData.childId) {
+      return
     }
-    wx.setStorageSync('currentPoints', this.globalData.currentPoints)
-    return this.globalData.currentPoints
+    
+    try {
+      const openid = 'mock_child_openid_001'
+      const user = await api.login(openid)
+      this.globalData.userInfo = user
+      this.globalData.childId = user.role === 'child' ? user.id : user.childId
+      wx.setStorageSync('userInfo', JSON.stringify(user))
+    } catch (error) {
+      console.error('登录失败', error)
+      wx.showToast({
+        title: '登录失败，请稍后重试',
+        icon: 'none'
+      })
+    }
+  },
+  
+  async refreshPoints() {
+    if (!this.globalData.childId) return
+    
+    try {
+      const result = await api.getCurrentPoints(this.globalData.childId)
+      const points = result?.points ?? 0
+      this.globalData.currentPoints = points
+      wx.setStorageSync('currentPoints', points)
+      return points
+    } catch (error) {
+      console.error('获取积分失败', error)
+      return this.globalData.currentPoints
+    }
+  },
+  
+  ensureReady() {
+    return this.readyPromise || Promise.resolve()
   },
   
   // 切换家长模式
@@ -97,13 +98,6 @@ App({
   // 退出家长模式
   exitParentMode() {
     this.globalData.isParentMode = false
-  },
-  
-  globalData: {
-    userInfo: null,
-    currentPoints: 0,
-    token: null,
-    isParentMode: false
   }
 })
 
