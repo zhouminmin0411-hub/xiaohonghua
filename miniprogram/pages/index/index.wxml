@@ -1,86 +1,61 @@
-<!--小朋友首页-->
+<!-- 小朋友首页 · 绘本风重制 -->
 <view class="page">
-  <!-- 英雄区域 -->
+  <view class="paper-noise"></view>
+
   <view class="hero">
-    <view class="hero-top">
-      <view class="brand">
-        <text class="brand-label">小红花</text>
-        <text class="brand-subtitle">{{greeting}}</text>
+    <view class="hero-header">
+      <view class="avatar-bubble">
+        <text class="avatar-placeholder">🙂</text>
       </view>
-      <view class="settings-entry" bind:tap="onOpenSettings" hover-class="pressed">
-        <text class="settings-icon">⚙️</text>
-      </view>
-    </view>
-
-    <view class="flower-counter">
-      <view class="counter-left">
-        <view class="flower-emblem">🌸</view>
-        <view class="counter-info">
-          <text class="counter-label">当前小红花</text>
-          <text class="counter-value">{{currentPoints}}</text>
-        </view>
-      </view>
-      <view class="counter-flash">
-        <text>继续保持好状态！</text>
+      <view class="hero-text">
+        <text class="hero-title">{{greeting}} 你现在拥有 {{currentPoints}} 朵小红花~</text>
       </view>
     </view>
 
-    <view class="hero-metas">
-      <view class="meta-card">
-        <text class="meta-label">今日任务</text>
-        <text class="meta-value">{{tasks.length}}</text>
+    <view class="wish-jar-card">
+      <view class="jar-petals">
+        <image
+          wx:for="{{petalCloud}}"
+          wx:key="index"
+          class="floating-petal"
+          style="top: {{item.top}}; left: {{item.left}}; --dur: {{item.duration}}s; --del: {{item.delay}}s; --scale: {{item.scale}};"
+          src="/assets/flower1.png"
+        />
       </view>
-      <view class="meta-card">
-        <text class="meta-label">可领奖励</text>
-        <text class="meta-value">+{{totalReward}}🌸</text>
-      </view>
-      <view class="meta-card">
-        <text class="meta-label">已完成</text>
-        <text class="meta-value">{{completedCount}}</text>
+      <view class="jar-visual {{jarAnimate ? 'jar-animate' : ''}}">
+        <image class="jar-image" src="{{jarImage}}" mode="aspectFit" />
       </view>
     </view>
   </view>
 
-  <!-- 任务列表 -->
   <view class="tasks-section">
     <view class="section-title">
-      <text>今日任务待你探索</text>
+      <text class="section-mark">✦</text>
+      <text>今日任务</text>
+      <text class="section-sub">完成就能得到小红花</text>
     </view>
     
     <view wx:if="{{tasks.length === 0}}" class="empty-state">
       <text class="empty-icon">📋</text>
-      <text class="empty-text">暂无任务</text>
+      <text class="empty-text">暂无任务，等你来添加哦</text>
     </view>
     
-    <view wx:else class="task-list">
+    <view wx:else class="task-grid">
       <view 
         wx:for="{{tasks}}" 
         wx:key="id" 
         class="task-card {{item.status === 'received' ? 'task-received' : ''}} {{item.status === 'completed' ? 'task-completed' : ''}}"
       >
-        <view class="task-card-body">
-          <view class="task-icon">{{item.icon}}</view>
-          <view class="task-content">
-            <view class="task-title-row">
-              <text class="task-title">{{item.title}}</text>
-              <view class="task-tag">
-                {{item.type === 'challenge' ? '挑战任务' : item.type === 'daily' ? '每日习惯' : '家务任务'}}
-              </view>
-            </view>
-            <view class="task-meta-row">
-              <view class="task-duration" wx:if="{{item.timeEstimate}}">
-                <text class="meta-dot"></text>{{item.timeEstimate}}
-              </view>
-              <view class="task-reward-pill">+{{item.reward}} 小红花</view>
-            </view>
-            <view class="task-description">{{item.description ? item.description : '完成后让家里更棒！'}}</view>
-          </view>
+        <view class="task-icon">{{item.icon || '🎯'}}</view>
+        <view class="task-text">
+          <view class="task-title">{{item.title}}</view>
+          <view class="task-reward-brief">+{{item.reward}} 小红花</view>
         </view>
 
         <view class="task-action-wrapper">
           <view 
             wx:if="{{item.status === 'available'}}"
-            class="task-action-btn task-btn-warning"
+            class="task-action-btn task-btn-primary"
             bind:tap="onReceiveTask"
             data-id="{{item.id}}"
             id="task-btn-{{item.id}}"
@@ -89,7 +64,7 @@
           </view>
           <view 
             wx:elif="{{item.status === 'received'}}"
-            class="task-action-btn task-btn-primary"
+            class="task-action-btn task-btn-accent"
             bind:tap="onCompleteTask"
             data-id="{{item.id}}"
             data-record-id="{{item.recordId}}"
@@ -99,32 +74,30 @@
           >
             我完成啦！
           </view>
-          <view wx:else class="completed-inline">
-            <text class="status-pill status-completed">✓ 已完成</text>
-            <text wx:if="{{item.parentLikedAt}}" class="status-pill status-liked">❤️ 已点赞</text>
+          <view wx:else class="task-status-inline">
+            <text class="status-simple">已完成</text>
           </view>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 自定义浮动导航 -->
   <view class="floating-nav {{floatingNavHidden ? 'floating-nav-hidden' : ''}}">
     <view 
       class="nav-item active" 
       data-path="/pages/index/index" 
       bind:tap="onNavigateTab"
     >
-      <view class="nav-icon">🏡</view>
-      <text>首页</text>
+      <view class="nav-icon">📋</view>
+      <text>今日任务</text>
     </view>
     <view 
       class="nav-item" 
       data-path="/pages/rewards/rewards" 
       bind:tap="onNavigateTab"
     >
-      <view class="nav-icon">🎁</view>
-      <text>积分商城</text>
+      <view class="nav-icon">🌸</view>
+      <text>小红花</text>
     </view>
     <view 
       class="nav-item" 
@@ -136,7 +109,6 @@
     </view>
   </view>
 
-  <!-- 小红花飞入动画 -->
   <view 
     wx:if="{{showFlowerAnimation}}" 
     class="flower-animation"
@@ -146,6 +118,5 @@
     🌸
   </view>
 
-  <!-- Toast提示 -->
   <van-toast id="van-toast" />
 </view>

@@ -16,7 +16,17 @@ Page({
     flowerAnimationData: {},
     flowerX: 0,
     flowerY: 0,
-    floatingNavHidden: false
+    floatingNavHidden: false,
+    goalPoints: 20,
+    jarImage: '/assets/bottle_0.png',
+    jarAnimate: false,
+    petalCloud: [
+      { top: '18%', left: '18%', duration: 9, delay: 0, scale: 0.9 },
+      { top: '22%', left: '72%', duration: 10, delay: 1.2, scale: 0.8 },
+      { top: '50%', left: '14%', duration: 11, delay: 0.8, scale: 0.95 },
+      { top: '56%', left: '78%', duration: 12, delay: 1.8, scale: 0.88 },
+      { top: '36%', left: '48%', duration: 13, delay: 0.5, scale: 0.9 }
+    ]
   },
 
   async onLoad() {
@@ -24,6 +34,7 @@ Page({
     this.setData({
       currentPoints: app.globalData.currentPoints
     })
+    this.updateJarState(app.globalData.currentPoints, this.data.goalPoints)
     this.loadTasks()
     this.updateGreeting()
   },
@@ -34,6 +45,7 @@ Page({
     this.setData({
       currentPoints: app.globalData.currentPoints
     })
+    this.updateJarState(app.globalData.currentPoints, this.data.goalPoints)
   },
 
   onHide() {
@@ -43,6 +55,7 @@ Page({
 
   onUnload() {
     this.clearScrollTimer()
+    this.clearJarTimer()
   },
 
   // 加载任务列表
@@ -109,13 +122,13 @@ Page({
     let greeting = ''
     
     if (hour < 6) {
-      greeting = '夜深了，早点休息哦~'
+      greeting = '夜深了，早点休息哦！'
     } else if (hour < 9) {
-      greeting = '早上好，新的一天开始啦！'
+      greeting = '早上好，精神满满！'
     } else if (hour < 12) {
-      greeting = '上午好，加油完成任务！'
+      greeting = '上午好，继续加油！'
     } else if (hour < 14) {
-      greeting = '中午好，记得休息一下~'
+      greeting = '中午好，记得休息一下！'
     } else if (hour < 18) {
       greeting = '下午好，继续加油！'
     } else if (hour < 22) {
@@ -133,10 +146,13 @@ Page({
     const totalReward = tasks
       .filter(task => task.status === 'available' || task.status === 'received')
       .reduce((sum, task) => sum + (task.reward || 0), 0)
+    const goalPoints = Math.max(totalReward || 20, 20)
     this.setData({
       completedCount,
-      totalReward
+      totalReward,
+      goalPoints
     })
+    this.updateJarState(this.data.currentPoints, goalPoints)
   },
 
   // 领取任务
@@ -208,6 +224,7 @@ Page({
       this.setData({
         currentPoints: points
       })
+      this.updateJarState(points, this.data.goalPoints)
       
       wx.showToast({
         title: `完成啦！+${reward} 小红花`,
@@ -294,6 +311,7 @@ Page({
     this.setData({
       currentPoints: app.globalData.currentPoints
     })
+    this.updateJarState(app.globalData.currentPoints, this.data.goalPoints)
     wx.stopPullDownRefresh()
   },
   
@@ -321,6 +339,54 @@ Page({
         parentLikedAt: record?.parentLikedAt || null
       }
     })
+  },
+
+  updateJarState(points = 0, goal = 20) {
+    const safeGoal = Math.max(goal || 20, 1)
+    const ratio = Math.max(0, Math.min(points / safeGoal, 1))
+    let state = '0'
+    if (ratio >= 0.85) {
+      state = '100'
+    } else if (ratio >= 0.6) {
+      state = '75'
+    } else if (ratio >= 0.35) {
+      state = '50'
+    } else if (ratio >= 0.1) {
+      state = '25'
+    }
+
+    const imageMap = {
+      '0': '/assets/bottle_0.png',
+      '25': '/assets/bottle_25.png',
+      '50': '/assets/bottle_50.png',
+      '75': '/assets/bottle_75.png',
+      '100': '/assets/bottle_100.png'
+    }
+    const jarImage = imageMap[state] || imageMap['0']
+
+    const shouldPop = this.prevJarState !== state
+    this.prevJarState = state
+
+    this.setData({
+      jarImage,
+      goalPoints: Math.round(safeGoal),
+      jarAnimate: shouldPop
+    })
+
+    if (shouldPop) {
+      this.clearJarTimer()
+      this.jarAnimTimer = setTimeout(() => {
+        this.setData({ jarAnimate: false })
+        this.jarAnimTimer = null
+      }, 480)
+    }
+  },
+
+  clearJarTimer() {
+    if (this.jarAnimTimer) {
+      clearTimeout(this.jarAnimTimer)
+      this.jarAnimTimer = null
+    }
   },
   
   getRecordTimestamp(record) {
