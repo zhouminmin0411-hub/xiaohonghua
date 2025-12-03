@@ -19,7 +19,7 @@ Page({
       currentPoints: app.globalData.currentPoints
     })
     this.loadRewards()
-    
+
     // 获取屏幕尺寸
     const systemInfo = wx.getSystemInfoSync()
     this.setData({
@@ -34,6 +34,13 @@ Page({
     this.setData({
       currentPoints: app.globalData.currentPoints
     })
+
+    if (typeof this.getTabBar === 'function' &&
+      this.getTabBar()) {
+      this.getTabBar().setData({
+        selected: 2
+      })
+    }
   },
 
   onHide() {
@@ -149,7 +156,7 @@ Page({
     for (let i = 0; i < particleCount; i++) {
       const angle = (Math.PI * 2 * i) / particleCount
       const velocity = 3 + Math.random() * 3
-      
+
       particles.push({
         x: centerX,
         y: centerY,
@@ -202,6 +209,13 @@ Page({
       clearTimeout(this.particleTimer)
       this.particleTimer = null
     }
+  },
+
+  // 自定义底部导航
+  onNavigateTab(e) {
+    const path = e.currentTarget.dataset.path
+    if (!path) return
+    wx.reLaunch({ url: path })
   },
 
   // 下拉刷新

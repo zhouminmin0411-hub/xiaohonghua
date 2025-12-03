@@ -1,27 +1,18 @@
-<!--积分商城页面-->
-<view class="rewards-page">
-  <!-- 英雄头部 -->
-  <view class="rewards-hero">
-    <view class="hero-glimmer"></view>
-    <view class="hero-content">
-      <view class="hero-text-group">
-        <text class="hero-label">积分商城</text>
-        <text class="hero-sub">兑换属于你的惊喜奖励</text>
-      </view>
-      <view class="hero-points-card">
-        <view class="hero-flower">🌸</view>
-        <view class="hero-points-info">
-          <text class="hero-points-label">可用小红花</text>
-          <text class="hero-points-value">{{currentPoints}}</text>
-        </view>
-      </view>
+<!--积分商城页面 · 绘本风 Refined-->
+<view class="page-container">
+  <!-- 顶部积分栏 -->
+  <view class="header">
+    <view class="header-title">积分商城</view>
+    <view class="flower-counter">
+      <text class="flower-counter-icon">🌸</text>
+      <text class="flower-counter-number">{{currentPoints}}</text>
     </view>
   </view>
 
   <!-- 奖励列表 -->
-  <view class="rewards-section">
-    <view class="section-title">
-      <text>可兑换奖励</text>
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">可兑换奖励</text>
       <text class="section-subtitle">积分越多，惊喜越大</text>
     </view>
 
@@ -36,42 +27,29 @@
         wx:key="id"
         class="reward-card {{currentPoints < item.cost ? 'reward-disabled' : ''}}"
       >
-        <view class="reward-card-body">
-          <view class="reward-icon-wrapper">
-            <view class="reward-icon">{{item.icon}}</view>
-          </view>
-
-          <view class="reward-info">
-            <view class="reward-title-row">
-              <view class="reward-title">{{item.title}}</view>
-              <view class="reward-type-tag">
-                {{item.type === 'virtual' ? '虚拟奖励' : '实物奖励'}}
-              </view>
-            </view>
-            <view class="reward-meta">
-              <view class="reward-cost">
-                <text class="cost-number">{{item.cost}}</text>
-                <text class="cost-unit"> 小红花</text>
-              </view>
-              <view class="reward-hint">兑换后可在记录里查看</view>
-            </view>
-          </view>
+        <view class="reward-icon">{{item.icon}}</view>
+        <view class="reward-info">
+          <view class="reward-title">{{item.title}}</view>
+          <view class="reward-cost">{{item.cost}} 小红花</view>
         </view>
 
         <view class="reward-action">
           <view
-            class="redeem-btn {{currentPoints < item.cost ? 'btn-disabled' : ''}}"
+            class="action-btn {{currentPoints < item.cost ? 'btn-disabled' : 'primary-btn'}}"
             bind:tap="onRedeemReward"
             data-id="{{item.id}}"
             data-title="{{item.title}}"
             data-cost="{{item.cost}}"
           >
-            {{currentPoints < item.cost ? '积分不足' : '立即兑换'}}
+            {{currentPoints < item.cost ? '积分不足' : '兑换'}}
           </view>
         </view>
       </view>
     </view>
   </view>
+
+  <!-- 底部导航栏 (基于 Spec 第5章) -->
+  <!-- 已移除手动 TabBar，使用自定义 TabBar 组件 -->
 
   <!-- 粒子爆炸动画层 -->
   <canvas 

@@ -37,7 +37,7 @@ Page({
       })
       return
     }
-    
+
     try {
       const cached = wx.getStorageSync('userInfo')
       if (cached) {
@@ -163,5 +163,12 @@ Page({
       showCancel: false,
       confirmText: '知道了'
     })
+  },
+
+  // 自定义底部导航
+  onNavigateTab(e) {
+    const path = e.currentTarget.dataset.path
+    if (!path) return
+    wx.reLaunch({ url: path })
   }
 })

@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/wishes/wishes",
     "pages/rewards/rewards",
     "pages/settings/settings",
     "pages/parent/home/home",
@@ -11,10 +12,30 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#FF5A5A",
+    "navigationBarBackgroundColor": "#FFF9E6",
     "navigationBarTitleText": "小红花",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#F9F9F9"
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFF9E6"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#5D4037",
+    "selectedColor": "#FF6B6B",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "任务"
+      },
+      {
+        "pagePath": "pages/wishes/wishes",
+        "text": "许愿瓶"
+      },
+      {
+        "pagePath": "pages/rewards/rewards",
+        "text": "兑换"
+      }
+    ]
   },
   "usingComponents": {
     "van-button": "@vant/weapp/button/index",

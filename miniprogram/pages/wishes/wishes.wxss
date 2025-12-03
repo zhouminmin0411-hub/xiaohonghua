@@ -1,0 +1,121 @@
+/* pages/wishes/wishes.wxss */
+.page-container {
+  min-height: 100vh;
+  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
+  background: #F9EDC8;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2rpx solid rgba(255,255,255,0.4);
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #5D4037;
+}
+
+.jar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 60rpx;
+  height: 70vh;
+}
+
+.jar-container {
+  width: 600rpx;
+  height: 650rpx;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.jar-pop {
+  transform: scale(1.05);
+}
+
+.jar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 10;
+}
+
+.jar-label {
+  position: absolute;
+  bottom: -40rpx;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 12rpx 32rpx;
+  border-radius: 32rpx;
+  font-size: 28rpx;
+  color: #6B452B;
+  font-weight: 600;
+  box-shadow: 0 4rpx 12rpx rgba(107, 69, 43, 0.1);
+  border: 2rpx solid #FFD93D;
+  z-index: 20;
+}
+
+.jar-tips {
+  margin-top: 80rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.jar-tips text {
+  font-size: 32rpx;
+  color: #8C7467;
+  font-weight: 500;
+}
+
+/* 花瓣动画 */
+.petal-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.petal {
+  position: absolute;
+  font-size: 32rpx;
+  opacity: 0.6;
+  animation: float 10s infinite linear;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(-10%) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(110%) translateX(20rpx) rotate(360deg);
+    opacity: 0;
+  }
+}
+

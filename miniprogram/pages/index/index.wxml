@@ -1,38 +1,30 @@
-<!-- 小朋友首页 · 绘本风重制 -->
-<view class="page">
-  <view class="paper-noise"></view>
-
-  <view class="hero">
-    <view class="hero-header">
-      <view class="avatar-bubble">
-        <text class="avatar-placeholder">🙂</text>
+<!-- 小朋友首页 · 绘本风 Refined -->
+<view class="page-container">
+  <!-- 顶部区域：头像 & 问候 -->
+  <view class="header">
+    <view class="header-left">
+      <view class="avatar" bind:tap="onOpenSettings">
+        <text class="avatar-text">🙂</text>
       </view>
-      <view class="hero-text">
-        <text class="hero-title">{{greeting}} 你现在拥有 {{currentPoints}} 朵小红花~</text>
+      <view class="greeting">
+        <text class="greeting-text">{{greeting}}</text>
       </view>
     </view>
-
-    <view class="wish-jar-card">
-      <view class="jar-petals">
-        <image
-          wx:for="{{petalCloud}}"
-          wx:key="index"
-          class="floating-petal"
-          style="top: {{item.top}}; left: {{item.left}}; --dur: {{item.duration}}s; --del: {{item.delay}}s; --scale: {{item.scale}};"
-          src="/assets/flower1.png"
-        />
-      </view>
-      <view class="jar-visual {{jarAnimate ? 'jar-animate' : ''}}">
-        <image class="jar-image" src="{{jarImage}}" mode="aspectFit" />
+    <view class="header-right">
+      <view class="flower-counter">
+        <text class="flower-counter-icon">🌸</text>
+        <text class="flower-counter-number">{{currentPoints}}</text>
       </view>
     </view>
   </view>
 
-  <view class="tasks-section">
-    <view class="section-title">
-      <text class="section-mark">✦</text>
-      <text>今日任务</text>
-      <text class="section-sub">完成就能得到小红花</text>
+
+
+  <!-- 任务列表区域 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">今日任务</text>
+      <text class="section-subtitle">完成就能得到小红花</text>
     </view>
     
     <view wx:if="{{tasks.length === 0}}" class="empty-state">
@@ -40,31 +32,37 @@
       <text class="empty-text">暂无任务，等你来添加哦</text>
     </view>
     
-    <view wx:else class="task-grid">
+    <view wx:else class="task-list">
       <view 
         wx:for="{{tasks}}" 
         wx:key="id" 
-        class="task-card {{item.status === 'received' ? 'task-received' : ''}} {{item.status === 'completed' ? 'task-completed' : ''}}"
+        class="task-card {{item.status === 'completed' ? 'task-completed' : ''}}"
       >
-        <view class="task-icon">{{item.icon || '🎯'}}</view>
-        <view class="task-text">
-          <view class="task-title">{{item.title}}</view>
-          <view class="task-reward-brief">+{{item.reward}} 小红花</view>
+        <!-- 左侧图标 -->
+        <view class="task-icon-wrapper">
+          <view class="task-icon">{{item.icon || '🎯'}}</view>
         </view>
 
-        <view class="task-action-wrapper">
+        <!-- 中间信息 -->
+        <view class="task-info">
+          <view class="task-title">{{item.title}}</view>
+          <view class="task-reward">+{{item.reward}} 小红花</view>
+        </view>
+
+        <!-- 右侧按钮 -->
+        <view class="task-action">
           <view 
             wx:if="{{item.status === 'available'}}"
-            class="task-action-btn task-btn-primary"
+            class="action-btn primary-btn"
             bind:tap="onReceiveTask"
             data-id="{{item.id}}"
             id="task-btn-{{item.id}}"
           >
-            接取任务
+            接取
           </view>
           <view 
             wx:elif="{{item.status === 'received'}}"
-            class="task-action-btn task-btn-accent"
+            class="action-btn primary-btn"
             bind:tap="onCompleteTask"
             data-id="{{item.id}}"
             data-record-id="{{item.recordId}}"
@@ -72,43 +70,17 @@
             data-title="{{item.title}}"
             id="task-btn-{{item.id}}"
           >
-            我完成啦！
+            我做完啦
           </view>
-          <view wx:else class="task-status-inline">
-            <text class="status-simple">已完成</text>
+          <view wx:else class="status-text">
+            <text>已完成</text>
           </view>
         </view>
       </view>
     </view>
   </view>
 
-  <view class="floating-nav {{floatingNavHidden ? 'floating-nav-hidden' : ''}}">
-    <view 
-      class="nav-item active" 
-      data-path="/pages/index/index" 
-      bind:tap="onNavigateTab"
-    >
-      <view class="nav-icon">📋</view>
-      <text>今日任务</text>
-    </view>
-    <view 
-      class="nav-item" 
-      data-path="/pages/rewards/rewards" 
-      bind:tap="onNavigateTab"
-    >
-      <view class="nav-icon">🌸</view>
-      <text>小红花</text>
-    </view>
-    <view 
-      class="nav-item" 
-      data-path="/pages/settings/settings" 
-      bind:tap="onNavigateTab"
-    >
-      <view class="nav-icon">⚙️</view>
-      <text>设置</text>
-    </view>
-  </view>
-
+  <!-- 小红花飞入动画 -->
   <view 
     wx:if="{{showFlowerAnimation}}" 
     class="flower-animation"

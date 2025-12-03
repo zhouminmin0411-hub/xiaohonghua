@@ -1,62 +1,166 @@
-/* 设置页面样式 */
+/* 设置页面样式 · 绘本风 Refined v2.0 */
 
-.container {
+.page-container {
   min-height: 100vh;
-  background: #F9F9F9;
+  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
+  background: #F9EDC8; /* 奶油底色 */
 }
 
-/* 用户信息 */
-.user-info {
-  background: linear-gradient(135deg, #FF5A5A 0%, #FF8787 100%);
-  padding: 60rpx 32rpx 80rpx;
-  text-align: center;
+/* 顶部导航栏 */
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2rpx solid rgba(255,255,255,0.4);
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #6B452B;
+}
+
+/* 用户信息区域 */
+.user-section {
+  padding: 32rpx;
+}
+
+.user-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 40rpx;
+  padding: 48rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(93, 64, 55, 0.05);
+  border: 4rpx dashed #FFD93D;
 }
 
 .avatar {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 60rpx;
-  border: 4rpx solid rgba(255, 255, 255, 0.9);
-  margin-bottom: 16rpx;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  border: 6rpx solid #FFFFFF;
+  box-shadow: 0 8rpx 16rpx rgba(107, 69, 43, 0.1);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
 }
 
 .nickname {
-  color: white;
-  font-size: 36rpx;
-  font-weight: bold;
-  margin-bottom: 12rpx;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #6B452B;
 }
 
 .role-badge {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
   padding: 8rpx 24rpx;
   border-radius: 24rpx;
   font-size: 24rpx;
+  font-weight: 600;
 }
 
-/* 设置区域 */
-.settings-section {
-  margin-top: -40rpx;
+.role-child {
+  background: #FFE8E8;
+  color: #EA6651;
+}
+
+.role-parent {
+  background: #E8F0FE;
+  color: #4285F4;
+}
+
+/* 设置列表 */
+.settings-list {
   padding: 0 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
 }
 
-/* 密码对话框 */
-.password-dialog {
+.setting-item {
+  background: #FFFFFF;
+  border-radius: 32rpx;
+  padding: 32rpx;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  box-shadow: 0 4rpx 8rpx rgba(107, 69, 43, 0.05);
+  transition: all 0.2s ease;
+}
+
+.setting-item:active {
+  transform: scale(0.98);
+  background: #FAFAFA;
+}
+
+.setting-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  background: #FFF6D9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+}
+
+.setting-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.setting-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #6B452B;
+}
+
+.setting-desc {
+  font-size: 24rpx;
+  color: #B3704C;
+}
+
+.setting-arrow {
+  color: #D49435;
+  font-weight: 700;
+  font-size: 32rpx;
+}
+
+/* 底部导航栏 */
+/* Removed */
+
+/* 密码弹窗样式 */
+.password-dialog-card {
   width: 600rpx;
+  background: #FFF9E6;
+  border-radius: 40rpx;
   padding: 48rpx 32rpx 32rpx;
+  border: 4rpx solid #6B452B;
+  box-shadow: 0 12rpx 0 #6B452B;
 }
 
 .dialog-title {
   text-align: center;
   font-size: 36rpx;
-  font-weight: bold;
-  color: #333;
+  font-weight: 700;
+  color: #6B452B;
   margin-bottom: 48rpx;
 }
 
-/* 密码输入区域 */
 .password-input-area {
   margin-bottom: 48rpx;
 }
@@ -71,14 +175,14 @@
   width: 48rpx;
   height: 48rpx;
   border-radius: 24rpx;
-  border: 2rpx solid #EAEAEA;
-  background: white;
+  border: 4rpx solid #D49435;
+  background: #FFFFFF;
   transition: all 0.2s;
 }
 
 .password-dot.filled {
-  background: #FF5A5A;
-  border-color: #FF5A5A;
+  background: #EA6651;
+  border-color: #EA6651;
 }
 
 /* 密码键盘 */
@@ -96,29 +200,39 @@
 .key {
   flex: 1;
   height: 96rpx;
-  background: #F9F9F9;
-  border-radius: 16rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 40rpx;
-  color: #333;
-  transition: all 0.2s;
+  font-weight: 600;
+  color: #6B452B;
+  box-shadow: 0 4rpx 0 #E3BFA0;
+  transition: all 0.1s;
+  border: 2rpx solid #E3BFA0;
 }
 
 .key:active {
-  background: #EAEAEA;
-  transform: scale(0.95);
+  transform: translateY(4rpx);
+  box-shadow: none;
+  background: #FFF0D0;
 }
 
 .key.empty {
   background: transparent;
+  box-shadow: none;
+  border: none;
 }
 
 .key.delete {
   background: #FFE8E8;
-  color: #FF5A5A;
-  font-size: 36rpx;
-  font-weight: bold;
+  color: #EA6651;
+  border-color: #FFC0C0;
+  box-shadow: 0 4rpx 0 #FFC0C0;
+}
+
+.key.delete:active {
+  background: #FFD0D0;
 }
 
