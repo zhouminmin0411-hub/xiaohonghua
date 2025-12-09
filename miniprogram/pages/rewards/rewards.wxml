@@ -4,7 +4,7 @@
   <view class="header">
     <view class="header-title">积分商城</view>
     <view class="flower-counter">
-      <text class="flower-counter-icon">🌸</text>
+      <image src="/assets/flower1.png" class="flower-counter-icon" mode="aspectFit" />
       <text class="flower-counter-number">{{currentPoints}}</text>
     </view>
   </view>

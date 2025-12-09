@@ -4,20 +4,20 @@ Component({
         color: "#5D4037",
         selectedColor: "#FF6B6B",
         list: [{
-            pagePath: "/pages/index/index",
-            text: "任务",
-            icon: "todo-list-o",
-            selectedIcon: "todo-list"
-        }, {
             pagePath: "/pages/wishes/wishes",
             text: "许愿瓶",
-            icon: "flower-o",
-            selectedIcon: "flower-o"
+            iconPath: "/assets/icon_flower.png",
+            selectedIconPath: "/assets/icon_flower.png"
+        }, {
+            pagePath: "/pages/index/index",
+            text: "任务",
+            iconPath: "/assets/icon_task.png",
+            selectedIconPath: "/assets/icon_task.png"
         }, {
             pagePath: "/pages/rewards/rewards",
             text: "兑换",
-            icon: "gift-o",
-            selectedIcon: "gift"
+            iconPath: "/assets/icon_gift.png",
+            selectedIconPath: "/assets/icon_gift.png"
         }]
     },
     methods: {

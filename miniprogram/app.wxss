@@ -80,7 +80,9 @@ page {
 }
 
 .flower-counter-icon {
-  font-size: 36rpx;
+  width: 48rpx;
+  height: 48rpx;
+  display: block;
 }
 
 .flower-counter-number {

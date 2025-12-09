@@ -130,7 +130,15 @@
 .task-reward {
   font-size: 28rpx;
   color: #FF6B6B;
-  font-weight: 500;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.reward-icon-small {
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .task-action {

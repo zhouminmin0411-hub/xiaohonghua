@@ -42,8 +42,15 @@
   transform: translateY(-10rpx) scale(1.1);
 }
 
+.tab-icon-img {
+  width: 64rpx;
+  height: 64rpx;
+  margin-bottom: -4rpx;
+}
+
 .tab-text {
   font-size: 20rpx;
-  margin-top: 6rpx;
+  margin-top: 4rpx;
+  line-height: 1;
   font-weight: 600;
 }

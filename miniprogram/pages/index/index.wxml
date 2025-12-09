@@ -1,22 +1,7 @@
 <!-- 小朋友首页 · 绘本风 Refined -->
 <view class="page-container">
-  <!-- 顶部区域：头像 & 问候 -->
-  <view class="header">
-    <view class="header-left">
-      <view class="avatar" bind:tap="onOpenSettings">
-        <text class="avatar-text">🙂</text>
-      </view>
-      <view class="greeting">
-        <text class="greeting-text">{{greeting}}</text>
-      </view>
-    </view>
-    <view class="header-right">
-      <view class="flower-counter">
-        <text class="flower-counter-icon">🌸</text>
-        <text class="flower-counter-number">{{currentPoints}}</text>
-      </view>
-    </view>
-  </view>
+  <!-- 顶部区域：头像 & 问候 (已移动到许愿瓶页面) -->
+  <view class="header-placeholder" style="height: 20rpx;"></view>
 
 
 
@@ -46,7 +31,10 @@
         <!-- 中间信息 -->
         <view class="task-info">
           <view class="task-title">{{item.title}}</view>
-          <view class="task-reward">+{{item.reward}} 小红花</view>
+          <view class="task-reward">
+            <text>+{{item.reward}}</text>
+            <image src="/assets/flower1.png" class="reward-icon-small" mode="aspectFit" />
+          </view>
         </view>
 
         <!-- 右侧按钮 -->
