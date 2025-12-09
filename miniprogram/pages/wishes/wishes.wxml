@@ -1,35 +1,76 @@
 <view class="page-container">
+  <!-- 顶部区域：头像 & 问候 -->
+  <!-- 顶部区域：头像 & 问候 -->
   <view class="header">
-    <view class="header-title">许愿瓶</view>
-    <view class="flower-counter">
-      <text class="flower-counter-icon">🌸</text>
-      <text class="flower-counter-number">{{currentPoints}}</text>
+    <view class="header-content">
+      <!-- Avatar Section -->
+      <view class="avatar-container" bind:tap="onOpenSettings">
+        <image class="avatar-img" src="{{userInfo.avatarUrl}}" mode="aspectFill" wx:if="{{userInfo.avatarUrl}}"/>
+        <view class="default-avatar" wx:else>
+          <text class="default-avatar-face">🙂</text>
+        </view>
+      </view>
+      
+      <!-- Greeting Bubble -->
+      <view class="greeting-bubble">
+        <view class="greeting-text">你好，{{userInfo.nickname || '小朋友'}}！</view>
+        <view class="greeting-sub">今天也要加油哦~</view>
+      </view>
     </view>
   </view>
-
+  <!-- 许愿瓶展示区 (Hero Section) -->
   <view class="jar-section">
-    <view class="jar-container {{jarAnimate ? 'jar-pop' : ''}}">
+    <view class="jar-container">
       <image class="jar-image" src="{{jarImage}}" mode="aspectFit" />
-      <view class="jar-label">
-        <text>本周目标 {{currentPoints}}/{{goalPoints}}</text>
-      </view>
       
       <!-- 飘落花瓣动画 -->
       <view class="petal-container">
         <view 
           wx:for="{{petalCloud}}" 
           wx:key="index"
-          class="petal"
-          style="animation-duration: {{item.duration}}s; animation-delay: -{{item.duration * item.phase}}s;"
+          class="petal petal-float"
+          style="--start-x: {{item.startX}}rpx; --start-y: {{item.startY}}rpx; --h-drift: {{item.horizontalDrift}}rpx; --v-drift: {{item.verticalDrift}}rpx; --duration: {{item.duration}}s; --delay: {{item.delay}}s; --scale: {{item.scale}}; --rotation: {{item.rotation}}deg;"
         >
-          🌸
+          <image src="/assets/flower1.png" class="petal-img" mode="aspectFit" />
         </view>
       </view>
     </view>
     
-    <view class="jar-tips">
-      <text>收集小红花，装满许愿瓶，</text>
-      <text>就可以实现一个愿望哦！</text>
+    <view class="jar-info">
+      <view class="points-badge">
+        <image src="/assets/flower1.png" class="badge-icon" mode="aspectFit" />
+        <text class="badge-text">你已经拥有 {{currentPoints}} 朵小红花啦</text>
+      </view>
+      <view class="jar-tips">继续收集小红花，装满许愿瓶吧！</view>
+    </view>
+  </view>
+
+  <!-- 收支记录列表 -->
+  <view class="history-section">
+    <view class="section-header">
+      <text class="section-title">小红花记录</text>
+    </view>
+
+    <view wx:if="{{history.length === 0}}" class="empty-state">
+      <text class="empty-icon">📝</text>
+      <text class="empty-text">还没有记录哦</text>
+    </view>
+
+    <view wx:else class="history-list">
+      <view wx:for="{{history}}" wx:key="id" class="history-item {{item.isIncome ? 'item-income' : 'item-expense'}}">
+        <view class="history-left">
+          <view class="history-icon-wrapper">
+            <text class="history-icon">{{item.isIncome ? '✨' : '🎁'}}</text>
+          </view>
+          <view class="history-info">
+            <view class="history-title">{{item.reason || (item.isIncome ? '完成任务' : '兑换奖励')}}</view>
+            <view class="history-time">{{item.formattedDate}}</view>
+          </view>
+        </view>
+        <view class="history-right {{item.isIncome ? 'income' : 'expense'}}">
+          {{item.isIncome ? '+' : ''}}{{item.change}}
+        </view>
+      </view>
     </view>
   </view>
 </view>
