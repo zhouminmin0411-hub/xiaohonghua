@@ -35,6 +35,7 @@ public class PointHistory {
     /**
      * 积分变化（正数表示增加，负数表示扣减）
      */
+    @TableField("`change`")
     private Integer change;
     
     /**

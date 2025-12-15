@@ -27,6 +27,44 @@
   padding: 32rpx;
 }
 
+.status-card {
+  background: linear-gradient(135deg, #FFF8E7 0%, #FFFFFF 100%);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(107, 87, 68, 0.08);
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  font-size: 28rpx;
+}
+
+.status-row:last-child {
+  margin-bottom: 0;
+}
+
+.status-label {
+  color: #8B7355;
+  margin-right: 16rpx;
+  min-width: 140rpx;
+}
+
+.status-value {
+  color: #6B5744;
+  font-weight: 700;
+}
+
+.status-value.enabled {
+  color: #52C41A;
+}
+
+.status-value.disabled {
+  color: #999999;
+}
+
 .config-card {
   background: white;
   border-radius: 24rpx;

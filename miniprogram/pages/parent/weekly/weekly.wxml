@@ -6,6 +6,24 @@
   </view>
 
   <view class="config-section">
+    <!-- 配置状态卡片 -->
+    <view class="status-card">
+      <view class="status-row">
+        <text class="status-label">当前状态：</text>
+        <text class="status-value {{config.enabled ? 'enabled' : 'disabled'}}">
+          {{config.enabled ? '✓ 已启用' : '✕ 已停用'}}
+        </text>
+      </view>
+      <view class="status-row" wx:if="{{config.enabled && config.lastSentAt}}">
+        <text class="status-label">上次发放：</text>
+        <text class="status-value">{{lastSentAtText}}</text>
+      </view>
+      <view class="status-row" wx:if="{{config.enabled}}">
+        <text class="status-label">下次发放：</text>
+        <text class="status-value">{{weekDayMap[config.dayOfWeek]}} {{config.time}}</text>
+      </view>
+    </view>
+
     <view class="config-card">
       <van-cell-group>
         <van-field
@@ -53,8 +71,10 @@
   </view>
 
   <!-- 星期选择器 -->
-  <van-popup show="{{showDayPopup}}" position="bottom">
+  <van-popup show="{{showDayPopup}}" position="bottom" bind:close="onDayCancel">
     <van-picker
+      show-toolbar
+      title="选择发放星期"
       columns="{{dayColumns}}"
       bind:confirm="onDayConfirm"
       bind:cancel="onDayCancel"
@@ -62,9 +82,10 @@
   </van-popup>
 
   <!-- 时间选择器 -->
-  <van-popup show="{{showTimePopup}}" position="bottom">
+  <van-popup show="{{showTimePopup}}" position="bottom" bind:close="onTimeCancel">
     <van-datetime-picker
       type="time"
+      title="选择发放时间"
       value="{{timeValue}}"
       bind:confirm="onTimeConfirm"
       bind:cancel="onTimeCancel"

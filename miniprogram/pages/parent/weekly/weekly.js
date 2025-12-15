@@ -13,6 +13,7 @@ Page({
     showDayPopup: false,
     showTimePopup: false,
     timeValue: '09:00',
+    lastSentAtText: '',
     weekDayMap: {
       1: '周一',
       2: '周二',
@@ -45,9 +46,22 @@ Page({
     }
     try {
       const result = await api.getWeeklyConfig(childId)
+      
+      // 格式化上次发放时间
+      let lastSentAtText = ''
+      if (result.lastSentAt) {
+        const date = new Date(result.lastSentAt)
+        const month = date.getMonth() + 1
+        const day = date.getDate()
+        const hour = date.getHours()
+        const minute = date.getMinutes()
+        lastSentAtText = `${month}月${day}日 ${hour}:${minute < 10 ? '0' + minute : minute}`
+      }
+      
       this.setData({
         config: result,
-        timeValue: result.time
+        timeValue: result.time,
+        lastSentAtText
       })
     } catch (e) {
       console.error('加载配置失败', e)
@@ -118,12 +132,24 @@ Page({
 
     try {
       const childId = app.globalData.childId
-      await api.updateWeeklyConfig(childId, config)
+      const result = await api.updateWeeklyConfig(childId, config)
+      
+      // 更新本地数据，显示最新配置
+      this.setData({
+        config: result
+      })
+      
       wx.showToast({
         title: '保存成功',
         icon: 'success'
       })
+      
+      // 延迟重新加载，确保显示最新状态
+      setTimeout(() => {
+        this.loadConfig()
+      }, 1000)
     } catch (e) {
+      console.error('保存配置失败', e)
       wx.showToast({
         title: '保存失败',
         icon: 'error'
