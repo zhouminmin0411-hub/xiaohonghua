@@ -15,16 +15,16 @@ Page({
     // 生成随机花瓣配置
     generatePetalCloud(count = 40) {
         const petals = []
-        const maxDelay = 0  // 最大延迟16秒，让花瓣在16秒内陆续出现
+        const maxDelay = 16  // 最大延迟16秒，让花瓣在16秒内陆续出现
         
         for (let i = 0; i < count; i++) {
-            const startX = Math.random() * 450 + 50   // 50-500rpx 在容器区域
-            const startY = Math.random() * 100  // 0-100rpx 从顶部区域随机位置开始
-            // 水平位移：-80到+80rpx的漂移
-            const horizontalDrift = (Math.random() - 0.5) * 160
-            // 垂直位移：300-540rpx的绝对位移
-            const verticalDrift = Math.random() * 240 + 300  // 300-540rpx
-            const duration = Math.random() * 8 + 8  // 8-16秒
+            const startX = Math.random() * 800 - 50   // -50-750rpx 覆盖整个屏幕宽度(750rpx)并稍微超出
+            const startY = Math.random() * 200   // -50-150rpx 从更高位置开始，部分在屏幕外
+            // 水平位移：-100到+100rpx的漂移
+            const horizontalDrift = (Math.random() - 0.5) * 200
+            // 垂直位移：400-700rpx的更大绝对位移
+            const verticalDrift = Math.random() * 300 + 300  // 300-600rpx
+            const duration = Math.random() * 10 + 6  // 8-16秒
             // 随机延迟，让花瓣随机时间出现，而不是按顺序
             const delay = Math.random() * maxDelay  // 0-16秒随机延迟
             const scale = Math.random() * 0.5 + 0.85  // 0.85-1.35

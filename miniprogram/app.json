@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/index/index",
     "pages/wishes/wishes",
+    "pages/index/index",
     "pages/rewards/rewards",
     "pages/settings/settings",
     "pages/parent/home/home",

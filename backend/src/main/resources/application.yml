@@ -12,6 +12,10 @@ spring:
     name: xiaohonghua-backend
   profiles:
     active: dev
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/xiaohonghua?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
@@ -59,4 +63,22 @@ knife4j:
   enable: true
   setting:
     language: zh-CN
+
+# 微信小程序配置
+wechat:
+  miniapp:
+    appid: wxe1fef2b88d7ea01e  # 请替换为实际的小程序AppID
+    secret: b3364978955119ad09d507afe5fc6c1e # 请替换为实际的小程序AppSecret
+    
+# 文件上传配置
+file:
+  upload:
+    # 上传目录（相对路径或绝对路径）
+    path: ./uploads/avatars/
+    # 允许的文件类型
+    allowed-types: jpg,jpeg,png,gif
+    # 最大文件大小（单位：字节，2MB）
+    max-size: 2097152
+    # 访问URL前缀
+    url-prefix: /uploads/avatars/
 

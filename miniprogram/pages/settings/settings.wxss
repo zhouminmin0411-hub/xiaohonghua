@@ -43,12 +43,38 @@
   border: 4rpx dashed #FFD93D;
 }
 
+/* 头像编辑区域 */
+.avatar-edit-wrapper {
+  position: relative;
+  width: 160rpx;
+  height: 160rpx;
+  margin: 0 auto;
+}
+
+.avatar-edit-btn {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  width: 160rpx;
+  height: 160rpx;
+  display: block;
+  line-height: 1;
+}
+
+.avatar-edit-btn::after {
+  border: none;
+}
+
 .avatar {
   width: 160rpx;
   height: 160rpx;
-  border-radius: 50%;
+  border-radius: 80rpx;
   border: 6rpx solid #FFFFFF;
   box-shadow: 0 8rpx 16rpx rgba(107, 69, 43, 0.1);
+  display: block;
+  background: #F5F5F5;
 }
 
 .user-info {
@@ -56,6 +82,38 @@
   flex-direction: column;
   align-items: center;
   gap: 12rpx;
+  width: 100%;
+}
+
+/* 昵称编辑区域 */
+.nickname-edit-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.nickname-input {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #6B452B;
+  text-align: center;
+  min-width: 200rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  background: rgba(255, 217, 61, 0.1);
+  border: 2rpx dashed transparent;
+  transition: all 0.2s;
+}
+
+.nickname-input:focus {
+  border-color: #FFD93D;
+  background: rgba(255, 217, 61, 0.2);
+}
+
+.edit-hint {
+  font-size: 24rpx;
+  opacity: 0.5;
 }
 
 .nickname {
