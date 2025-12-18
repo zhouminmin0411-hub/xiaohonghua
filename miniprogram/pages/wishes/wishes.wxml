@@ -29,7 +29,7 @@
           wx:for="{{petalCloud}}" 
           wx:key="index"
           class="petal petal-float"
-          style="--start-x: {{item.startX}}rpx; --start-y: {{item.startY}}rpx; --h-drift: {{item.horizontalDrift}}rpx; --v-drift: {{item.verticalDrift}}rpx; --duration: {{item.duration}}s; --delay: {{item.delay}}s; --scale: {{item.scale}}; --rotation: {{item.rotation}}deg;"
+          style="--start-x: {{item.startX}}%; --start-y: {{item.startY}}%; --end-x: {{item.endX}}%; --end-y: {{item.endY}}%; --duration: {{item.duration}}s; --delay: {{item.delay}}s; --scale: {{item.scale}}; --rotation: {{item.rotation}}deg;"
         >
           <image src="/assets/flower1.png" class="petal-img" mode="aspectFit" />
         </view>

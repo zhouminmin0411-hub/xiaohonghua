@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
  * 微信小程序配置
  * 
  * @author xiaohonghua
- * @since 2025-12-16
+ * @since 2025-12-17
  */
 @Data
 @Configuration

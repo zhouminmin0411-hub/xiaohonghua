@@ -8,11 +8,9 @@ Page({
       nickname: '小明',
       avatarUrl: 'https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132'
     },
-    avatarDisplayUrl: '/assets/default-avatar.png', // 用于显示的头像URL（处理后的完整URL）
     isParentMode: false,
     showPasswordDialog: false,
-    password: '',
-    tempNickname: '' // 临时存储正在编辑的昵称
+    password: ''
   },
 
   async onLoad() {
@@ -35,9 +33,7 @@ Page({
     const userInfo = app.globalData.userInfo
     if (userInfo) {
       this.setData({
-        userInfo,
-        tempNickname: userInfo.nickname || '',
-        avatarDisplayUrl: this.getDisplayAvatarUrl(userInfo.avatarUrl)
+        userInfo
       })
       return
     }
@@ -47,181 +43,11 @@ Page({
       if (cached) {
         const parsed = typeof cached === 'string' ? JSON.parse(cached) : cached
         this.setData({
-          userInfo: parsed,
-          tempNickname: parsed.nickname || '',
-          avatarDisplayUrl: this.getDisplayAvatarUrl(parsed.avatarUrl)
-        })
-      } else {
-        this.setData({
-          avatarDisplayUrl: '/assets/default-avatar.png'
+          userInfo: parsed
         })
       }
     } catch (e) {
       console.error('加载用户信息失败', e)
-      this.setData({
-        avatarDisplayUrl: '/assets/default-avatar.png'
-      })
-    }
-  },
-  
-  // 获取显示用的头像URL
-  getDisplayAvatarUrl(avatarUrl) {
-    if (!avatarUrl) {
-      return '/assets/default-avatar.png'
-    }
-    // 如果是相对路径（以/uploads开头），加上后端服务器地址
-    if (avatarUrl.startsWith('/uploads')) {
-      return 'http://127.0.0.1:8081/api' + avatarUrl
-    }
-    // 如果是以//开头（协议相对），加上https:
-    if (avatarUrl.startsWith('//')) {
-      return 'https:' + avatarUrl
-    }
-    // 如果是完整URL，直接返回
-    return avatarUrl
-  },
-
-  // 选择头像
-  async onChooseAvatar(e) {
-    const { avatarUrl } = e.detail
-    console.log('选择的头像:', avatarUrl)
-    
-    try {
-      const userId = app.globalData.userInfo?.id
-      if (!userId) {
-        wx.showToast({
-          title: '请先登录',
-          icon: 'none'
-        })
-        return
-      }
-
-      wx.showLoading({
-        title: '上传中...',
-        mask: true
-      })
-
-      // 上传头像到服务器
-      const result = await api.uploadAvatar(userId, avatarUrl)
-      
-      // 更新本地数据
-      const newUserInfo = {
-        ...this.data.userInfo,
-        avatarUrl: result.avatarUrl || avatarUrl
-      }
-      
-      this.setData({ 
-        userInfo: newUserInfo,
-        avatarDisplayUrl: this.getDisplayAvatarUrl(newUserInfo.avatarUrl)
-      })
-      app.globalData.userInfo = newUserInfo
-      wx.setStorageSync('userInfo', JSON.stringify(newUserInfo))
-      
-      wx.hideLoading()
-      wx.showToast({
-        title: '头像更新成功',
-        icon: 'success'
-      })
-      
-      // 如果昵称还是默认的，提示用户设置昵称
-      if (newUserInfo.nickname === '小朋友' || !newUserInfo.nickname) {
-        setTimeout(() => {
-          wx.showToast({
-            title: '别忘了设置昵称哦',
-            icon: 'none',
-            duration: 2000
-          })
-        }, 1500)
-      }
-    } catch (error) {
-      wx.hideLoading()
-      console.error('上传头像失败', error)
-      
-      // 即使上传失败，也先在本地显示选择的头像
-      const newUserInfo = {
-        ...this.data.userInfo,
-        avatarUrl: avatarUrl
-      }
-      this.setData({ 
-        userInfo: newUserInfo,
-        avatarDisplayUrl: avatarUrl // 临时URL直接使用
-      })
-      app.globalData.userInfo = newUserInfo
-      wx.setStorageSync('userInfo', JSON.stringify(newUserInfo))
-      
-      wx.showToast({
-        title: '头像已暂存本地',
-        icon: 'none'
-      })
-    }
-  },
-
-  // 昵称输入
-  onNicknameInput(e) {
-    this.setData({
-      tempNickname: e.detail.value
-    })
-  },
-
-  // 昵称失去焦点（保存昵称）
-  async onNicknameBlur() {
-    const { tempNickname, userInfo } = this.data
-    
-    // 如果昵称没有变化，不做处理
-    if (!tempNickname || tempNickname === userInfo.nickname) {
-      return
-    }
-
-    try {
-      const userId = app.globalData.userInfo?.id
-      if (!userId) {
-        wx.showToast({
-          title: '请先登录',
-          icon: 'none'
-        })
-        return
-      }
-
-      wx.showLoading({
-        title: '保存中...',
-        mask: true
-      })
-
-      // 更新昵称到服务器
-      await api.updateUserProfile(userId, { nickname: tempNickname })
-      
-      // 更新本地数据
-      const newUserInfo = {
-        ...userInfo,
-        nickname: tempNickname
-      }
-      
-      this.setData({ userInfo: newUserInfo })
-      app.globalData.userInfo = newUserInfo
-      wx.setStorageSync('userInfo', JSON.stringify(newUserInfo))
-      
-      wx.hideLoading()
-      wx.showToast({
-        title: '昵称更新成功',
-        icon: 'success'
-      })
-    } catch (error) {
-      wx.hideLoading()
-      console.error('更新昵称失败', error)
-      
-      // 即使更新失败，也先在本地保存
-      const newUserInfo = {
-        ...userInfo,
-        nickname: tempNickname
-      }
-      this.setData({ userInfo: newUserInfo })
-      app.globalData.userInfo = newUserInfo
-      wx.setStorageSync('userInfo', JSON.stringify(newUserInfo))
-      
-      wx.showToast({
-        title: '昵称已暂存本地',
-        icon: 'none'
-      })
     }
   },
 

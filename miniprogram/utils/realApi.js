@@ -54,51 +54,8 @@ function login(openid) {
   return request({ url: '/auth/login', method: 'POST', data: { openid }, showLoading: true })
 }
 
-// 使用微信code登录（新增）
-function loginWithCode(code) {
-  return request({ url: '/auth/wechat-login', method: 'POST', data: { code }, showLoading: true })
-}
-
 function verifyParentPassword(userId, password) {
   return request({ url: '/auth/verify-parent-password', method: 'POST', data: { userId, password }, showLoading: true })
-}
-
-// 用户信息管理（新增）
-function updateUserProfile(userId, profileData) {
-  return request({ url: `/users/${userId}/profile`, method: 'PUT', data: profileData, showLoading: true })
-}
-
-function uploadAvatar(userId, filePath) {
-  return new Promise((resolve, reject) => {
-    wx.showLoading({ title: '上传中...', mask: true })
-    
-    const token = wx.getStorageSync('authToken') || ''
-    
-    wx.uploadFile({
-      url: `${getBaseURL()}/users/${userId}/avatar`,
-      filePath: filePath,
-      name: 'avatar',
-      header: {
-        Authorization: token ? `Bearer ${token}` : ''
-      },
-      success(res) {
-        const data = JSON.parse(res.data)
-        if (data.code === 200) {
-          resolve(data.data)
-        } else {
-          wx.showToast({ title: data.message || '上传失败', icon: 'none' })
-          reject(data)
-        }
-      },
-      fail(err) {
-        wx.showToast({ title: '网络异常', icon: 'none' })
-        reject(err)
-      },
-      complete() {
-        wx.hideLoading()
-      }
-    })
-  })
 }
 
 // 任务
@@ -190,10 +147,7 @@ function updateWeeklyConfig(childId, config) {
 
 module.exports = {
   login,
-  loginWithCode,
   verifyParentPassword,
-  updateUserProfile,
-  uploadAvatar,
   getTasks,
   createTask,
   updateTask,

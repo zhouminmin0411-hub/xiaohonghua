@@ -4,6 +4,7 @@ const api = require('../../utils/realApi')
 Page({
     data: {
         userInfo: {},
+        avatarDisplayUrl: '',
         currentPoints: 0,
         goalPoints: 20,
         history: [],
@@ -66,12 +67,27 @@ Page({
 
         await app.ensureReady()
         const points = app.globalData.currentPoints
+        const userInfo = app.globalData.userInfo || {}
         this.setData({
             currentPoints: points,
-            userInfo: app.globalData.userInfo || {}
+            userInfo: userInfo,
+            avatarDisplayUrl: this.getDisplayAvatarUrl(userInfo.avatarUrl)
         })
         this.updateJarState(points)
         this.loadHistory()
+    },
+    
+    // 获取显示用的头像URL
+    getDisplayAvatarUrl(avatarUrl) {
+        if (!avatarUrl) {
+            return ''
+        }
+        // 如果是相对路径（以/uploads开头），加上后端服务器地址
+        if (avatarUrl.startsWith('/uploads')) {
+            return 'http://localhost:8081/api' + avatarUrl
+        }
+        // 如果是完整URL，直接返回
+        return avatarUrl
     },
 
     updateJarState(points) {

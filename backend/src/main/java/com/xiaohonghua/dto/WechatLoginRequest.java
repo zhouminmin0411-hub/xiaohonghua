@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
  * 微信登录请求DTO
  * 
  * @author xiaohonghua
- * @since 2025-12-16
+ * @since 2025-12-17
  */
 @Data
 @ApiModel(description = "微信登录请求")

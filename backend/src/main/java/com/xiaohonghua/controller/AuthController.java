@@ -3,7 +3,6 @@ package com.xiaohonghua.controller;
 import com.xiaohonghua.common.Result;
 import com.xiaohonghua.dto.LoginRequest;
 import com.xiaohonghua.dto.VerifyPasswordRequest;
-import com.xiaohonghua.dto.WechatLoginRequest;
 import com.xiaohonghua.entity.User;
 import com.xiaohonghua.service.UserService;
 import io.swagger.annotations.Api;
@@ -38,14 +37,6 @@ public class AuthController {
     @PostMapping("/login")
     public Result<User> login(@Validated @RequestBody LoginRequest request) {
         User user = userService.mockLogin(request.getOpenid());
-        return Result.success(user);
-    }
-    
-    @ApiOperation("微信登录")
-    @PostMapping("/wechat-login")
-    public Result<User> wechatLogin(@Validated @RequestBody WechatLoginRequest request) {
-        log.info("微信登录请求，code={}", request.getCode());
-        User user = userService.wechatLogin(request.getCode());
         return Result.success(user);
     }
     

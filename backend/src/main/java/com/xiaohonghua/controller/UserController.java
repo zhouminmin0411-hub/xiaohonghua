@@ -20,7 +20,7 @@ import java.util.Map;
  * 用户Controller
  * 
  * @author xiaohonghua
- * @since 2025-12-16
+ * @since 2025-12-17
  */
 @Slf4j
 @Api(tags = "用户接口")
@@ -58,17 +58,6 @@ public class UserController {
         result.put("avatarUrl", avatarUrl);
         
         return Result.success(result);
-    }
-    
-    @ApiOperation("获取用户信息")
-    @GetMapping("/{userId}")
-    public Result<User> getUserInfo(
-            @ApiParam(value = "用户ID", required = true) @PathVariable Long userId) {
-        
-        log.info("获取用户信息，userId={}", userId);
-        
-        User user = userService.findByOpenid(null);  // TODO: 需要根据userId查询
-        return Result.success(user);
     }
 }
 

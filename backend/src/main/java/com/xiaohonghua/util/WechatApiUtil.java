@@ -16,7 +16,7 @@ import java.util.Map;
  * 微信API工具类
  * 
  * @author xiaohonghua
- * @since 2025-12-16
+ * @since 2025-12-17
  */
 @Slf4j
 @Component

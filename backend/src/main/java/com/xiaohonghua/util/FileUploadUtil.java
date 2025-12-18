@@ -19,7 +19,7 @@ import java.util.UUID;
  * 文件上传工具类
  * 
  * @author xiaohonghua
- * @since 2025-12-16
+ * @since 2025-12-17
  */
 @Slf4j
 @Component
