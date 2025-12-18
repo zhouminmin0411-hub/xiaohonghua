@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/index/index",
     "pages/wishes/wishes",
+    "pages/index/index",
     "pages/rewards/rewards",
     "pages/settings/settings",
     "pages/parent/home/home",
@@ -24,12 +24,12 @@
     "backgroundColor": "#ffffff",
     "list": [
       {
-        "pagePath": "pages/index/index",
-        "text": "任务"
-      },
-      {
         "pagePath": "pages/wishes/wishes",
         "text": "许愿瓶"
+      },
+      {
+        "pagePath": "pages/index/index",
+        "text": "任务"
       },
       {
         "pagePath": "pages/rewards/rewards",
