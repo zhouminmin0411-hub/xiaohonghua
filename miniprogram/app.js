@@ -57,18 +57,47 @@ App({
     }
     
     try {
-      const openid = 'mock_child_openid_001'
-      const user = await api.login(openid)
+      // 调用微信登录获取code
+      const loginRes = await this.wxLogin()
+      console.log('wx.login获取code成功:', loginRes.code)
+      
+      // 将code发送到后端，后端会用code换取openid并处理用户登录
+      const user = await api.loginWithCode(loginRes.code)
+      
       this.globalData.userInfo = user
       this.globalData.childId = user.role === 'child' ? user.id : user.childId
       wx.setStorageSync('userInfo', JSON.stringify(user))
+      
+      console.log('登录成功，用户信息:', user)
     } catch (error) {
       console.error('登录失败', error)
+      
+      // 如果登录失败，尝试使用mock数据（开发阶段）
+      console.warn('使用mock数据登录')
+      try {
+        const openid = 'mock_child_openid_001'
+        const user = await api.login(openid)
+        this.globalData.userInfo = user
+        this.globalData.childId = user.role === 'child' ? user.id : user.childId
+        wx.setStorageSync('userInfo', JSON.stringify(user))
+      } catch (mockError) {
+        console.error('Mock登录也失败', mockError)
       wx.showToast({
         title: '登录失败，请稍后重试',
         icon: 'none'
       })
     }
+    }
+  },
+  
+  // 封装wx.login为Promise
+  wxLogin() {
+    return new Promise((resolve, reject) => {
+      wx.login({
+        success: resolve,
+        fail: reject
+      })
+    })
   },
   
   async refreshPoints() {
