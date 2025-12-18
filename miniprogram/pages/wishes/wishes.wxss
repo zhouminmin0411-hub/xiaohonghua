@@ -151,11 +151,11 @@
 
 /* 花瓣动画 - 微风飘落效果 */
 .petal-container {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 750rpx;
+  height: 100vh;
   pointer-events: none;
   z-index: 20;
   overflow: visible;
@@ -165,13 +165,15 @@
   position: absolute;
   width: 44rpx;
   height: 44rpx;
-  left: var(--start-x, 0%);
-  top: var(--start-y, 0%);
+  left: var(--start-x, 0);
+  top: var(--start-y, 0);
 }
 
 .petal-float {
-  animation: petal-fall var(--duration, 9s) ease-in-out infinite;
+  animation: petal-fall var(--duration, 9s) linear infinite;
   animation-delay: var(--delay, 0s);
+  animation-fill-mode: backwards;
+  opacity: 0;
 }
 
 .petal-img {
@@ -180,53 +182,57 @@
   filter: drop-shadow(0 2rpx 6rpx rgba(255, 107, 107, 0.3));
 }
 
-/* 完整的飘落动画 - 自然飘落 */
+/* 完整的飘落动画 - 使用绝对位移rpx */
 @keyframes petal-fall {
   0% {
-    transform: translateX(0) translateY(0) rotate(0deg) scale(calc(var(--scale, 0.9) * 0.8));
+    transform: translateX(0) translateY(0) rotate(0deg) scale(calc(var(--scale, 0.9) * 0.75));
     opacity: 0;
   }
-  8% {
-    opacity: 0.4;
+  5% {
+    opacity: 0.3;
   }
-  15% {
-    transform: translateX(3%) translateY(15%) rotate(30deg) scale(var(--scale, 0.9));
-    opacity: 0.7;
+  10% {
+    transform: translateX(calc(var(--h-drift, 0rpx) * 0.08)) translateY(calc(var(--v-drift, 600rpx) * 0.12)) rotate(20deg) scale(calc(var(--scale, 0.9) * 0.9));
+    opacity: 0.6;
   }
-  25% {
-    transform: translateX(8%) translateY(30%) rotate(60deg) scale(calc(var(--scale, 0.9) * 1.02));
-    opacity: 0.85;
-  }
-  35% {
-    transform: translateX(12%) translateY(50%) rotate(95deg) scale(var(--scale, 0.9));
-    opacity: 0.9;
-  }
-  45% {
-    transform: translateX(17%) translateY(70%) rotate(135deg) scale(calc(var(--scale, 0.9) * 1.01));
-    opacity: 0.9;
-  }
-  55% {
-    transform: translateX(22%) translateY(90%) rotate(180deg) scale(var(--scale, 0.9));
-    opacity: 0.88;
-  }
-  65% {
-    transform: translateX(27%) translateY(110%) rotate(225deg) scale(calc(var(--scale, 0.9) * 0.98));
+  18% {
+    transform: translateX(calc(var(--h-drift, 0rpx) * 0.18)) translateY(calc(var(--v-drift, 600rpx) * 0.22)) rotate(45deg) scale(var(--scale, 0.9));
     opacity: 0.8;
   }
-  75% {
-    transform: translateX(30%) translateY(130%) rotate(270deg) scale(calc(var(--scale, 0.9) * 0.95));
-    opacity: 0.65;
+  28% {
+    transform: translateX(calc(var(--h-drift, 0rpx) * 0.32)) translateY(calc(var(--v-drift, 600rpx) * 0.35)) rotate(75deg) scale(calc(var(--scale, 0.9) * 1.03));
+    opacity: 0.9;
   }
-  85% {
-    transform: translateX(33%) translateY(150%) rotate(315deg) scale(calc(var(--scale, 0.9) * 0.92));
-    opacity: 0.4;
+  38% {
+    transform: translateX(calc(var(--h-drift, 0rpx) * 0.48)) translateY(calc(var(--v-drift, 600rpx) * 0.48)) rotate(110deg) scale(var(--scale, 0.9));
+    opacity: 0.92;
   }
-  95% {
-    transform: translateX(calc(var(--end-x, 50%) - var(--start-x, 0%) - 2%)) translateY(calc(var(--end-y, 160%) - var(--start-y, -15%) - 5%)) rotate(calc(var(--rotation, 360deg) - 20deg)) scale(calc(var(--scale, 0.9) * 0.88));
+  48% {
+    transform: translateX(calc(var(--h-drift, 0rpx) * 0.62)) translateY(calc(var(--v-drift, 600rpx) * 0.6)) rotate(150deg) scale(calc(var(--scale, 0.9) * 1.02));
+    opacity: 0.9;
+  }
+  58% {
+    transform: translateX(calc(var(--h-drift, 0rpx) * 0.75)) translateY(calc(var(--v-drift, 600rpx) * 0.72)) rotate(190deg) scale(var(--scale, 0.9));
+    opacity: 0.88;
+  }
+  68% {
+    transform: translateX(calc(var(--h-drift, 0rpx) * 0.85)) translateY(calc(var(--v-drift, 600rpx) * 0.82)) rotate(235deg) scale(calc(var(--scale, 0.9) * 0.98));
+    opacity: 0.82;
+  }
+  78% {
+    transform: translateX(calc(var(--h-drift, 0rpx) * 0.92)) translateY(calc(var(--v-drift, 600rpx) * 0.9)) rotate(280deg) scale(calc(var(--scale, 0.9) * 0.95));
+    opacity: 0.7;
+  }
+  88% {
+    transform: translateX(calc(var(--h-drift, 0rpx) * 0.97)) translateY(calc(var(--v-drift, 600rpx) * 0.96)) rotate(325deg) scale(calc(var(--scale, 0.9) * 0.9));
+    opacity: 0.45;
+  }
+  96% {
+    transform: translateX(calc(var(--h-drift, 0rpx) * 0.99)) translateY(calc(var(--v-drift, 600rpx) * 0.99)) rotate(calc(var(--rotation, 360deg) - 15deg)) scale(calc(var(--scale, 0.9) * 0.86));
     opacity: 0.15;
   }
   100% {
-    transform: translateX(calc(var(--end-x, 50%) - var(--start-x, 0%))) translateY(calc(var(--end-y, 160%) - var(--start-y, -15%))) rotate(var(--rotation, 360deg)) scale(calc(var(--scale, 0.9) * 0.85));
+    transform: translateX(var(--h-drift, 0rpx)) translateY(var(--v-drift, 600rpx)) rotate(var(--rotation, 360deg)) scale(calc(var(--scale, 0.9) * 0.82));
     opacity: 0;
   }
 }
