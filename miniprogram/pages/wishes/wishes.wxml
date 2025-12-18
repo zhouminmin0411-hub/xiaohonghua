@@ -14,7 +14,7 @@
       <!-- Greeting Bubble -->
       <view class="greeting-bubble">
         <view class="greeting-text">你好，{{userInfo.nickname || '小朋友'}}！</view>
-        <view class="greeting-sub">今天也要加油哦~</view>
+        <view class="greeting-sub">{{greetingMessage}}</view>
       </view>
     </view>
   </view>
@@ -41,7 +41,6 @@
         <image src="/assets/flower1.png" class="badge-icon" mode="aspectFit" />
         <text class="badge-text">你已经拥有 {{currentPoints}} 朵小红花啦</text>
       </view>
-      <view class="jar-tips">继续收集小红花，装满许愿瓶吧！</view>
     </view>
   </view>
 

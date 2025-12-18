@@ -1,6 +1,109 @@
 const app = getApp()
 const api = require('../../utils/realApi')
 
+const GREETING_MESSAGES = [
+    '今天你很努力 💪',
+    '小事也要认真 ✍️',
+    '先做一步就好 👣',
+    '做完心更轻松 🎈',
+    '一点点也算赢 🌱',
+    '不会没事，学就行 📚',
+    '错了能改也很棒 ✅',
+    '试过就很勇敢 🦁',
+    '坚持一下就到啦 ⏳',
+    '慢慢来也很好 🐢',
+    '把心放平稳 🍀',
+    '深呼吸一下 🌬️',
+    '休息一下再来 🧸',
+    '你能自己开始 🚀',
+    '你会越来越会做 ⭐️',
+    '今天比昨天好一点 📈',
+    '你没有放弃 👍',
+    '你在学新本事 🧠',
+    '你能管住自己 🎯',
+    '你很会坚持 🌟',
+    '先把小目标完成 🎯',
+    '做到就给自己赞 👍',
+    '认真就会变好 ✨',
+    '小努力会长大 🌼',
+    '每天一小步 👣',
+    '你在变更强 🔥',
+    '你很会想办法 💡',
+    '你会自己解决 🧩',
+    '不怕难，继续做 💪',
+    '不懂就问也棒 🙋',
+    '今天学到一点点 📚',
+    '今天更有耐心 🧸',
+    '今天更会专心 🎯',
+    '把东西放回家 🧺',
+    '桌子更干净啦 🧼',
+    '房间更整齐啦 🧽',
+    '你会照顾自己 🧴',
+    '你记得洗手啦 🧼',
+    '你记得喝水啦 💧',
+    '你记得早睡啦 🌙',
+    '做事先想一想 🤔',
+    '说话轻一点 🤍',
+    '先听完再说 👂',
+    '谢谢你真有礼 🎀',
+    '你很会分享 🍓',
+    '你很会等一等 🕰️',
+    '你很会排队 🧍',
+    '你很会守规则 ✅',
+    '你很会守约 ⏰',
+    '你很会守信 🤝',
+    '你帮了别人真好 🤍',
+    '你会说对不起 🙏',
+    '你会说没关系 😊',
+    '你会说谢谢你 🌷',
+    '你会关心别人 🫶',
+    '你会安慰别人 🧸',
+    '你会控制脾气 🌤️',
+    '生气时先停一下 🛑',
+    '难过也能说出来 🗣️',
+    '你的心很温暖 ☀️',
+    '先把难的做完 🧗',
+    '做完再去玩 🪁',
+    '先收拾再休息 🧺',
+    '先写一点点 ✍️',
+    '先读一小页 📖',
+    '先练五分钟 ⏱️',
+    '先做好这一件 ✅',
+    '先从简单开始 🧩',
+    '先把心静下来 🍀',
+    '自己的事情自己做 🖐️',
+    '你今天没有拖拉 🏃',
+    '你今天很守时 ⏰',
+    '你今天很专注 🎯',
+    '你今天很认真 ✍️',
+    '你今天很自觉 🌟',
+    '你今天很努力 💪',
+    '你今天很有耐心 🧸',
+    '你今天很会坚持 🌱',
+    '你今天很会学习 📚',
+    '你今天很会整理 🧺',
+    '小错误不吓人 🐣',
+    '下次会更好 🌈',
+    '再练一次就熟了 🔁',
+    '多练就会了 🏋️',
+    '做慢一点也对 ✅',
+    '做对了要记住 📌',
+    '做错了也学到 📚',
+    '你在变聪明 🧠✨',
+    '你在变更稳 🧱',
+    '你在变更勇敢 🦁',
+    '你能把事做完 ✅',
+    '你能把话说清 🗣️',
+    '你能把心放好 🤍',
+    '你能把手洗净 🧼',
+    '你能把玩具收好 🧸',
+    '你能把书放回去 📚',
+    '你能把规则记住 ✅',
+    '你能把自己照顾好 🌷',
+    '小红花记得你 🌸',
+    '继续向前走 👣✨'
+]
+
 Page({
     data: {
         userInfo: {},
@@ -10,7 +113,8 @@ Page({
         history: [],
         loading: false,
         jarImage: '/assets/bottle_0.png',
-        petalCloud: []
+        petalCloud: [],
+        greetingMessage: ''
     },
 
     // 生成随机花瓣配置
@@ -54,7 +158,8 @@ Page({
     onLoad() {
         // 生成随机花瓣
         const petalCloud = this.generatePetalCloud(12)
-        this.setData({ petalCloud })
+        const greetingMessage = this.pickRandomGreeting()
+        this.setData({ petalCloud, greetingMessage })
     },
 
     async onShow() {
@@ -68,10 +173,12 @@ Page({
         await app.ensureReady()
         const points = app.globalData.currentPoints
         const userInfo = app.globalData.userInfo || {}
+        const greetingMessage = this.pickRandomGreeting()
         this.setData({
             currentPoints: points,
             userInfo: userInfo,
-            avatarDisplayUrl: this.getDisplayAvatarUrl(userInfo.avatarUrl)
+            avatarDisplayUrl: this.getDisplayAvatarUrl(userInfo.avatarUrl),
+            greetingMessage
         })
         this.updateJarState(points)
         this.loadHistory()
@@ -88,6 +195,11 @@ Page({
         }
         // 如果是完整URL，直接返回
         return avatarUrl
+    },
+
+    pickRandomGreeting() {
+        const index = Math.floor(Math.random() * GREETING_MESSAGES.length)
+        return GREETING_MESSAGES[index]
     },
 
     updateJarState(points) {
