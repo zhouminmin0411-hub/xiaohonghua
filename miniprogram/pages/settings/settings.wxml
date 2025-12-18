@@ -8,9 +8,32 @@
   <!-- 用户信息卡片 -->
   <view class="user-section">
     <view class="user-card">
-      <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+      <!-- 头像编辑区 -->
+      <view class="avatar-edit-wrapper">
+        <button 
+          class="avatar-edit-btn" 
+          open-type="chooseAvatar" 
+          bindchooseavatar="onChooseAvatar"
+        >
+          <image class="avatar" src="{{avatarDisplayUrl}}" mode="aspectFit"></image>
+        </button>
+      </view>
+      
+      <!-- 用户信息编辑 -->
       <view class="user-info">
-        <view class="nickname">{{userInfo.nickname}}</view>
+        <!-- 昵称编辑 -->
+        <view class="nickname-edit-wrapper">
+          <input 
+            class="nickname-input" 
+            type="nickname" 
+            value="{{userInfo.nickname || ''}}"
+            placeholder="请输入昵称" 
+            bindinput="onNicknameInput"
+            bindblur="onNicknameBlur"
+          />
+          <text class="edit-hint">✏️</text>
+        </view>
+        
         <view class="role-badge {{isParentMode ? 'role-parent' : 'role-child'}}">
           {{isParentMode ? '家长模式' : '小朋友模式'}}
         </view>
