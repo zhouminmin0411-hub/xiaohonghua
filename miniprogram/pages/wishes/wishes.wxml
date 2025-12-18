@@ -5,7 +5,7 @@
     <view class="header-content">
       <!-- Avatar Section -->
       <view class="avatar-container" bind:tap="onOpenSettings">
-        <image class="avatar-img" src="{{userInfo.avatarUrl}}" mode="aspectFill" wx:if="{{userInfo.avatarUrl}}"/>
+        <image class="avatar-img" src="{{avatarDisplayUrl}}" mode="aspectFit" wx:if="{{avatarDisplayUrl}}"/>
         <view class="default-avatar" wx:else>
           <text class="default-avatar-face">🙂</text>
         </view>
