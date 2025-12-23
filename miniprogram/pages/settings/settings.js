@@ -1,5 +1,5 @@
 // 设置页面
-const api = require('../../utils/realApi')
+const api = require("../../utils/cloudApi")')
 const app = getApp()
 
 Page({

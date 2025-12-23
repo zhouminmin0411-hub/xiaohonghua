@@ -46,3 +46,5 @@ echo ""
 # 启动服务
 mvn spring-boot:run
 
+
+

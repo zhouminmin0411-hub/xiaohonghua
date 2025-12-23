@@ -1,5 +1,5 @@
 // pages/parent/home/home.js
-const api = require('../../../utils/realApi')
+const api = require("../../utils/cloudApi")')
 const dateUtil = require('../../../utils/date')
 const app = getApp()
 

@@ -1,5 +1,5 @@
 // 小朋友首页
-const api = require('../../utils/realApi')
+const cloudApi = require('../../utils/cloudApi')
 const animationUtil = require('../../utils/animation')
 const dateUtil = require('../../utils/date')
 const app = getApp()
@@ -82,8 +82,8 @@ Page({
     
     try {
       const [taskList, records] = await Promise.all([
-        api.getTasks(),
-        api.getTaskRecords(childId)
+        cloudApi.getTasks(),
+        cloudApi.getTaskRecords(childId)
       ])
       
       const tasks = this.mergeTaskStatus(taskList, records)
@@ -180,7 +180,7 @@ Page({
     animationUtil.vibrate('light')
     
     try {
-      await api.receiveTask(childId, taskId)
+      await cloudApi.receiveTask(childId, taskId)
       
       wx.showToast({
         title: '任务已领取',
@@ -227,7 +227,7 @@ Page({
     animationUtil.vibrate('medium')
     
     try {
-      await api.completeTask(recordId)
+      await cloudApi.completeTask(recordId)
       const points = await app.refreshPoints()
       this.setData({
         currentPoints: points

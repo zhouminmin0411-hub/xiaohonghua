@@ -26,3 +26,5 @@ public class WechatConfig {
     private String secret;
 }
 
+
+

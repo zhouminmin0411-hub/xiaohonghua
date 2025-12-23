@@ -1,5 +1,5 @@
 const app = getApp()
-const api = require('../../utils/realApi')
+const api = require('../../utils/cloudApi')
 
 const GREETING_MESSAGES = [
     '今天你很努力 💪',

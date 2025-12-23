@@ -1,0 +1,18 @@
+{
+  "containerPort": 8080,
+  "minNum": 1,
+  "maxNum": 5,
+  "cpu": 0.5,
+  "mem": 1,
+  "policyType": "cpu",
+  "policyThreshold": 60,
+  "envParams": {},
+  "customLogs": "/var/log/xiaohonghua/*.log",
+  "initialDelaySeconds": 30,
+  "dataBaseName": "xiaohonghua",
+  "executeSQLs": [
+    "sql/schema.sql",
+    "sql/seed.sql"
+  ]
+}
+

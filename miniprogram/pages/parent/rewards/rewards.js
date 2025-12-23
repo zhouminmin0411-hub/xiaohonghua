@@ -1,5 +1,5 @@
 // pages/parent/rewards/rewards.js
-const api = require('../../../utils/realApi')
+const api = require("../../utils/cloudApi")')
 const app = getApp()
 
 Page({

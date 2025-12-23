@@ -1,5 +1,5 @@
 // 积分商城页面
-const api = require('../../utils/realApi')
+const api = require("../../utils/cloudApi")')
 const animationUtil = require('../../utils/animation')
 const app = getApp()
 

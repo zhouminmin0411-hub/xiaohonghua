@@ -14,9 +14,10 @@
 /* 顶部区域 */
 .header {
   padding: 24rpx 32rpx;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: relative; /* 跟随页面滚动 */
+  top: auto;
+  z-index: 1;
+  background: transparent; /* 不单独上色，使用页面底色 */
 }
 
 .header-content {
@@ -94,7 +95,7 @@
   align-items: center;
   padding-top: 40rpx;
   padding-bottom: 40rpx;
-  background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 100%);
+  background: #F9EDC8; /* 与页面底色统一，去掉顶部色块 */
 }
 
 .jar-container {

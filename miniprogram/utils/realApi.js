@@ -4,8 +4,8 @@
 
 const CONFIG = {
   DEV_BASE_URL: 'http://localhost:8081/api',
-  PROD_BASE_URL: 'https://your-domain.com/api',
-  ENV: 'dev'
+  PROD_BASE_URL: 'https://api.amyworkshop.com/api',
+  ENV: 'prod'
 }
 
 const getBaseURL = () => CONFIG.ENV === 'dev' ? CONFIG.DEV_BASE_URL : CONFIG.PROD_BASE_URL

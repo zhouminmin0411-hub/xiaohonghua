@@ -1,9 +1,15 @@
 // app.js
-const api = require('./utils/realApi')
+const cloudApi = require('./utils/cloudApi')
 
 App({
   async onLaunch() {
     console.log('小红花小程序启动')
+    
+    // 初始化云开发
+    wx.cloud.init({
+      env: 'cloud1-6gmt7m654faa5008',
+      traceUser: true
+    })
     
     this.globalData = {
       userInfo: null,
@@ -36,7 +42,9 @@ App({
       if (userInfo) {
         const parsed = typeof userInfo === 'string' ? JSON.parse(userInfo) : userInfo
         this.globalData.userInfo = parsed
-        this.globalData.childId = parsed.role === 'child' ? parsed.id : parsed.childId
+        // 云数据库使用 _id，兼容处理
+        const userId = parsed._id || parsed.id
+        this.globalData.childId = parsed.role === 'child' ? userId : (parsed.child_id || parsed.childId)
       }
       
       if (token) {
@@ -57,36 +65,23 @@ App({
     }
     
     try {
-      // 调用微信登录获取code
-      const loginRes = await this.wxLogin()
-      console.log('wx.login获取code成功:', loginRes.code)
+      // 调用云函数登录
+      const user = await cloudApi.login()
       
-      // 将code发送到后端，后端会用code换取openid并处理用户登录
-      const user = await api.loginWithCode(loginRes.code)
-      
-      this.globalData.userInfo = user
-      this.globalData.childId = user.role === 'child' ? user.id : user.childId
-      wx.setStorageSync('userInfo', JSON.stringify(user))
-      
-      console.log('登录成功，用户信息:', user)
+      if (user) {
+        this.globalData.userInfo = user
+        // 云数据库使用 _id，兼容处理
+        const userId = user._id || user.id
+        this.globalData.childId = user.role === 'child' ? userId : (user.child_id || user.childId)
+        wx.setStorageSync('userInfo', JSON.stringify(user))
+        console.log('登录成功，用户信息:', user)
+      }
     } catch (error) {
       console.error('登录失败', error)
-      
-      // 如果登录失败，尝试使用mock数据（开发阶段）
-      console.warn('使用mock数据登录')
-      try {
-        const openid = 'mock_child_openid_001'
-        const user = await api.login(openid)
-        this.globalData.userInfo = user
-        this.globalData.childId = user.role === 'child' ? user.id : user.childId
-        wx.setStorageSync('userInfo', JSON.stringify(user))
-      } catch (mockError) {
-        console.error('Mock登录也失败', mockError)
       wx.showToast({
         title: '登录失败，请稍后重试',
         icon: 'none'
       })
-    }
     }
   },
   
@@ -104,7 +99,7 @@ App({
     if (!this.globalData.childId) return
     
     try {
-      const result = await api.getCurrentPoints(this.globalData.childId)
+      const result = await cloudApi.getCurrentPoints(this.globalData.childId)
       const points = result?.points ?? 0
       this.globalData.currentPoints = points
       wx.setStorageSync('currentPoints', points)

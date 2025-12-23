@@ -48,12 +48,14 @@
   },
   "compileType": "miniprogram",
   "libVersion": "3.0.0",
-  "appid": "wxe1fef2b88d7ea01e",
+  "appid": "wx355879373ffbc112",
   "projectname": "xiaohonghua",
+  "cloudfunctionRoot": "cloudfunctions/",
   "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
   },
-  "simulatorPluginLibVersion": {}
+  "simulatorPluginLibVersion": {},
+  "cloudbaseRoot": "cloudfunctions/"
 }

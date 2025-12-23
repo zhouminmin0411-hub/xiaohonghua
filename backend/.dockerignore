@@ -1,0 +1,41 @@
+# Maven 构建文件
+target/
+!target/xiaohonghua-backend-1.0.0.jar
+pom.xml
+
+# IDE 文件
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# 源代码（构建后不需要）
+src/
+
+# 文档
+docs/
+*.md
+
+# Git
+.git/
+.gitignore
+
+# 本地上传文件
+uploads/
+
+# 日志文件
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.swp
+*~
+
+# Mac
+.DS_Store
+
+# SQL 脚本（已在数据库中）
+sql/
+

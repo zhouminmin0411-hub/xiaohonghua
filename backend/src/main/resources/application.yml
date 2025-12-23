@@ -67,8 +67,8 @@ knife4j:
 # 微信小程序配置
 wechat:
   miniapp:
-    appid: wxe1fef2b88d7ea01e  # 请替换为实际的小程序AppID
-    secret: b3364978955119ad09d507afe5fc6c1e # 请替换为实际的小程序AppSecret
+    appid: wx355879373ffbc112  # 小程序AppID
+    secret: 449114b800a79f953e91e50aae86a0dc # 小程序AppSecret
     
 # 文件上传配置
 file:
