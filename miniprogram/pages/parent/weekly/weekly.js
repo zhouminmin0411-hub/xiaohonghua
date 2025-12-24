@@ -1,15 +1,18 @@
 // pages/parent/weekly/weekly.js
-const api = require("../../utils/cloudApi")')
+const api = require('../../../utils/cloudApi')
 const app = getApp()
+
+const DEFAULT_WEEKLY_CONFIG = {
+  weeklyAmount: 10,
+  dayOfWeek: 1,
+  time: '09:00',
+  enabled: false,
+  lastSentAt: null
+}
 
 Page({
   data: {
-    config: {
-      weeklyAmount: 10,
-      dayOfWeek: 1,
-      time: '09:00',
-      enabled: false
-    },
+    config: { ...DEFAULT_WEEKLY_CONFIG },
     showDayPopup: false,
     showTimePopup: false,
     timeValue: '09:00',
@@ -46,11 +49,12 @@ Page({
     }
     try {
       const result = await api.getWeeklyConfig(childId)
+      const config = result || { ...DEFAULT_WEEKLY_CONFIG }
       
       // 格式化上次发放时间
       let lastSentAtText = ''
-      if (result.lastSentAt) {
-        const date = new Date(result.lastSentAt)
+      if (config.lastSentAt) {
+        const date = new Date(config.lastSentAt)
         const month = date.getMonth() + 1
         const day = date.getDate()
         const hour = date.getHours()
@@ -59,10 +63,17 @@ Page({
       }
       
       this.setData({
-        config: result,
-        timeValue: result.time,
+        config,
+        timeValue: config.time,
         lastSentAtText
       })
+
+      if (!result) {
+        wx.showToast({
+          title: '未获取到配置，使用默认值',
+          icon: 'none'
+        })
+      }
     } catch (e) {
       console.error('加载配置失败', e)
     }
@@ -120,6 +131,15 @@ Page({
   },
 
   async saveConfig() {
+    await app.ensureReady()
+    const childId = app.globalData.childId
+    if (!childId) {
+      wx.showToast({
+        title: '未找到孩子信息',
+        icon: 'none'
+      })
+      return
+    }
     const { config } = this.data
 
     if (!config.weeklyAmount || config.weeklyAmount < 0) {
@@ -131,12 +151,20 @@ Page({
     }
 
     try {
-      const childId = app.globalData.childId
       const result = await api.updateWeeklyConfig(childId, config)
+      if (!result) {
+        wx.showToast({
+          title: '保存失败，云函数未返回',
+          icon: 'none'
+        })
+        return
+      }
+
+      const newConfig = result || config
       
       // 更新本地数据，显示最新配置
       this.setData({
-        config: result
+        config: newConfig
       })
       
       wx.showToast({

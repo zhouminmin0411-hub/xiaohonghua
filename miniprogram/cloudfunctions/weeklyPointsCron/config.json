@@ -1,0 +1,9 @@
+{
+  "triggers": [
+    {
+      "name": "weeklyPointsHourly",
+      "type": "timer",
+      "config": "0 */1 * * * *"
+    }
+  ]
+}

@@ -142,13 +142,13 @@
 }
 
 .task-action {
-  min-width: 160rpx;
+  min-width: 140rpx;
   display: flex;
   justify-content: flex-end;
 }
 
 .action-btn {
-  /* 样式继承自 app.wxss .primary-btn */
+  /* 样式与积分商城兑换按钮一致，主样式由 app.wxss .primary-btn 提供 */
   display: flex;
   align-items: center;
   justify-content: center;

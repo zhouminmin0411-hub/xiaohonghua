@@ -1,12 +1,11 @@
 // pages/parent/rewards/rewards.js
-const api = require("../../utils/cloudApi")')
+const api = require('../../../utils/cloudApi')
 const app = getApp()
 
 Page({
   data: {
     rewards: [],
     showPopup: false,
-    showTypePopup: false,
     editingReward: null,
     formData: {
       icon: '🎁',
@@ -14,6 +13,11 @@ Page({
       type: 'virtual',
       cost: 5
     },
+    showTypePicker: false,
+    typeIndex: 0,
+    tempTypeIndex: 0,
+    submitting: false,
+    deletingId: null,
     rewardTypeMap: {
       'virtual': '虚拟奖励',
       'physical': '实物奖励'
@@ -35,8 +39,12 @@ Page({
   async loadRewards() {
     try {
       const rewards = await api.getRewards()
+      const normalizedRewards = (rewards || []).map((reward) => ({
+        ...reward,
+        id: reward.id || reward._id
+      }))
       this.setData({
-        rewards
+        rewards: normalizedRewards
       })
     } catch (e) {
       console.error('加载奖励失败', e)
@@ -52,12 +60,16 @@ Page({
         type: 'virtual',
         cost: 5
       },
+      showTypePicker: false,
+      typeIndex: 0,
+      tempTypeIndex: 0,
       showPopup: true
     })
   },
 
   editReward(e) {
     const reward = e.currentTarget.dataset.reward
+    const typeIndex = this.getTypeIndex(reward.type)
     this.setData({
       editingReward: reward,
       formData: {
@@ -66,19 +78,41 @@ Page({
         type: reward.type,
         cost: reward.cost
       },
+      showTypePicker: false,
+      typeIndex,
+      tempTypeIndex: typeIndex,
       showPopup: true
     })
   },
 
   deleteReward(e) {
     const { id } = e.currentTarget.dataset
+    if (!id) {
+      wx.showToast({
+        title: '未找到奖励ID',
+        icon: 'none'
+      })
+      return
+    }
+
+    if (this.data.deletingId) {
+      return
+    }
     wx.showModal({
       title: '确认删除',
       content: '删除后奖励将不再显示在孩子端',
       success: async (res) => {
         if (res.confirm) {
           try {
-            await api.deleteReward(id)
+            this.setData({ deletingId: id })
+            const result = await api.deleteReward(id)
+            if (result === null) {
+              wx.showToast({
+                title: '删除失败',
+                icon: 'error'
+              })
+              return
+            }
             wx.showToast({
               title: '删除成功',
               icon: 'success'
@@ -89,6 +123,8 @@ Page({
               title: '删除失败',
               icon: 'error'
             })
+          } finally {
+            this.setData({ deletingId: null })
           }
         }
       }
@@ -115,25 +151,47 @@ Page({
 
   showTypePicker() {
     this.setData({
-      showTypePopup: true
+      showTypePicker: true,
+      tempTypeIndex: this.data.typeIndex
     })
   },
 
-  onTypeConfirm(e) {
+  onTypePickerChange(e) {
+    const index = Array.isArray(e.detail.value) ? e.detail.value[0] : e.detail.value
     this.setData({
-      'formData.type': e.detail.value.value,
-      showTypePopup: false
+      tempTypeIndex: Number(index) || 0
+    })
+  },
+
+  onTypeConfirm() {
+    const index = this.data.tempTypeIndex || 0
+    const type = this.data.typeColumns[index]?.value || 'virtual'
+    this.setData({
+      'formData.type': type,
+      typeIndex: index,
+      showTypePicker: false
     })
   },
 
   onTypeCancel() {
     this.setData({
-      showTypePopup: false
+      showTypePicker: false,
+      tempTypeIndex: this.data.typeIndex
     })
   },
 
+  getTypeIndex(type) {
+    const index = this.data.typeColumns.findIndex((item) => item.value === type)
+    return index === -1 ? 0 : index
+  },
+
+  noop() {},
+
   async submitReward() {
     const { formData, editingReward } = this.data
+    if (this.data.submitting) {
+      return
+    }
 
     if (!formData.title) {
       wx.showToast({
@@ -152,15 +210,30 @@ Page({
     }
 
     try {
+      this.setData({ submitting: true })
       const payload = {
         ...formData,
-        createdByParentId: app.globalData.parentUserId || app.globalData.userInfo?.id || null
+        createdByParentId: app.globalData.parentUserId || app.globalData.userInfo?._id || app.globalData.userInfo?.id || null
       }
 
       if (editingReward) {
-        await api.updateReward(editingReward.id, payload)
+        const result = await api.updateReward(editingReward.id, payload)
+        if (result === null) {
+          wx.showToast({
+            title: '保存失败',
+            icon: 'error'
+          })
+          return
+        }
       } else {
-        await api.createReward(payload)
+        const result = await api.createReward(payload)
+        if (result === null) {
+          wx.showToast({
+            title: '创建失败',
+            icon: 'error'
+          })
+          return
+        }
       }
 
       wx.showToast({
@@ -174,12 +247,16 @@ Page({
         title: '操作失败',
         icon: 'error'
       })
+    } finally {
+      this.setData({ submitting: false })
     }
   },
 
   hidePopup() {
     this.setData({
-      showPopup: false
+      showPopup: false,
+      showTypePicker: false,
+      submitting: false
     })
   }
 })

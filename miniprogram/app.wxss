@@ -33,20 +33,19 @@ page {
 
 /* 绘本风主按钮 */
 .primary-btn {
-  background: var(--btn-yellow) !important;
-  color: var(--text-brown) !important;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px !important; /* 手绘不规则圆角 */
-  padding: 24rpx 40rpx !important;
-  font-size: 32rpx !important;
+  background: var(--btn-yellow, #FFD93D) !important;
+  color: var(--text-brown, #5D4037) !important;
+  border-radius: 48rpx !important; /* 与兑换按钮一致的圆角 */
+  padding: 16rpx 32rpx !important;
+  font-size: 28rpx !important;
   font-weight: 600 !important;
-  border: 4rpx solid var(--text-brown) !important; /* 手绘描边 */
-  box-shadow: 0 8rpx 0 var(--text-brown) !important; /* 实色阴影 */
-  transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  border: 2rpx solid var(--text-brown, #5D4037) !important;
+  box-shadow: none !important;
+  transition: transform 0.1s ease !important;
 }
 
 .primary-btn:active {
-  transform: scale(0.95) translateY(4rpx) !important;
-  box-shadow: 0 4rpx 0 var(--text-brown) !important;
+  transform: scale(0.96) !important;
 }
 
 .primary-btn[disabled] {

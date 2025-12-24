@@ -35,6 +35,13 @@
   margin-bottom: 24rpx;
 }
 
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
 .section-title {
   font-size: 36rpx;
   font-weight: 700;
@@ -104,6 +111,14 @@
   font-size: 26rpx;
   color: #FF6B6B;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.reward-cost-icon {
+  width: 28rpx;
+  height: 28rpx;
 }
 
 .reward-action {

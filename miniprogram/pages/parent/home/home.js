@@ -1,5 +1,5 @@
 // pages/parent/home/home.js
-const api = require("../../utils/cloudApi")')
+const api = require('../../../utils/cloudApi')
 const dateUtil = require('../../../utils/date')
 const app = getApp()
 
@@ -77,8 +77,7 @@ Page({
     }
     try {
       const result = await api.getTaskRecords(childId, 'completed')
-      const tasks = result
-        .sort((a, b) => dateUtil.getTimestamp(b.completedAt || b.updatedAt || b.createdAt) - dateUtil.getTimestamp(a.completedAt || a.updatedAt || a.createdAt))
+      const tasks = (result || [])
         .map(task => ({
           ...task,
           completedTime: this.formatTime(task.completedAt)

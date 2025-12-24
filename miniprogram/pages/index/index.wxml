@@ -8,7 +8,7 @@
   <!-- 任务列表区域 -->
   <view class="section">
     <view class="section-header">
-      <text class="section-title">今日任务</text>
+      <text class="section-title">我的任务</text>
       <text class="section-subtitle">完成就能得到小红花</text>
     </view>
     
@@ -46,7 +46,7 @@
             data-id="{{item.id}}"
             id="task-btn-{{item.id}}"
           >
-            接取
+            ✋🏻领取
           </view>
           <view 
             wx:elif="{{item.status === 'received'}}"
@@ -58,7 +58,7 @@
             data-title="{{item.title}}"
             id="task-btn-{{item.id}}"
           >
-            我做完啦
+            ✅做完啦
           </view>
           <view wx:else class="status-text">
             <text>已完成</text>

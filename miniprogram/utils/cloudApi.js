@@ -2,24 +2,28 @@
  * 云函数API封装
  */
 
+const CLOUD_ENV = 'cloud1-6gmt7m654faa5008'
+
 // 调用云函数的通用方法
 async function callFunction(name, data = {}, showLoading = false) {
   try {
     if (showLoading) {
       wx.showLoading({ title: '加载中...', mask: true })
     }
-    
+
     const res = await wx.cloud.callFunction({
       name,
-      data
+      data,
+      config: { env: CLOUD_ENV }
     })
-    
+
     if (showLoading) {
       wx.hideLoading()
     }
-    
+
     if (res.result && res.result.code === 200) {
-      return res.result.data
+      // 即便 data 为空，也返回空对象避免上层误判
+      return res.result.data ?? {}
     } else {
       const message = res.result?.message || '操作失败'
       wx.showToast({
@@ -28,7 +32,7 @@ async function callFunction(name, data = {}, showLoading = false) {
       })
       return null
     }
-    
+
   } catch (error) {
     if (showLoading) {
       wx.hideLoading()
@@ -49,6 +53,29 @@ async function callFunction(name, data = {}, showLoading = false) {
  */
 export async function login() {
   return await callFunction('login', {})
+}
+
+/**
+ * 验证家长密码
+ */
+export async function verifyParentPassword(userId, password) {
+  return await callFunction('verifyParentPassword', { userId, password }, true)
+}
+
+// ========== 每周配置 ==========
+
+/**
+ * 获取每周发放配置
+ */
+export async function getWeeklyConfig(childId) {
+  return await callFunction('getWeeklyConfig', { childId }, true)
+}
+
+/**
+ * 更新每周发放配置
+ */
+export async function updateWeeklyConfig(childId, config) {
+  return await callFunction('updateWeeklyConfig', { childId, config }, true)
 }
 
 // ========== 任务相关 ==========
@@ -79,6 +106,13 @@ export async function completeTask(recordId) {
  */
 export async function getTaskRecords(childId, status) {
   return await callFunction('getTaskRecords', { childId, status })
+}
+
+/**
+ * 点赞任务
+ */
+export async function likeTask(recordId) {
+  return await callFunction('likeTask', { recordId })
 }
 
 // ========== 积分相关 ==========
@@ -168,4 +202,3 @@ export async function deleteReward(rewardId) {
 export async function adjustPoints(childId, change, reason) {
   return await callFunction('adjustPoints', { childId, change, reason })
 }
-

@@ -168,7 +168,9 @@
   color: #6B5744;
   font-weight: 600;
   margin-bottom: 8rpx;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
 }

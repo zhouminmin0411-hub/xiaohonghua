@@ -77,16 +77,28 @@ Page({
       })
       return
     }
-    
+
     this.setData({ loading: true })
-    
+
     try {
       const [taskList, records] = await Promise.all([
         cloudApi.getTasks(),
         cloudApi.getTaskRecords(childId)
       ])
-      
-      const tasks = this.mergeTaskStatus(taskList, records)
+
+      const normalizedTasks = (taskList || []).map(task => ({
+        ...task,
+        id: task.id || task._id
+      }))
+      const normalizedRecords = (records || []).map(record => ({
+        ...record,
+        // 聚合查询已经提供了映射好的字段，这里只需确保日期字段存在
+        completedAt: record.completedAt || record.completed_at,
+        receivedAt: record.receivedAt || record.received_at,
+        createdAt: record.createdAt || record.created_at
+      }))
+
+      const tasks = this.mergeTaskStatus(normalizedTasks, normalizedRecords)
       this.updateTaskSummary(tasks)
       this.setData({
         tasks,
@@ -128,7 +140,7 @@ Page({
   updateGreeting() {
     const hour = new Date().getHours()
     let greeting = ''
-    
+
     if (hour < 6) {
       greeting = '夜深了，早点休息哦！'
     } else if (hour < 9) {
@@ -144,7 +156,7 @@ Page({
     } else {
       greeting = '该睡觉啦，明天再努力！'
     }
-    
+
     this.setData({ greeting })
   },
 
@@ -165,9 +177,9 @@ Page({
 
   // 领取任务
   async onReceiveTask(e) {
-    const taskId = Number(e.currentTarget.dataset.id)
+    const taskId = e.currentTarget.dataset.id
     const childId = app.globalData.childId
-    
+
     if (!childId) {
       wx.showToast({
         title: '请先登录',
@@ -175,19 +187,34 @@ Page({
       })
       return
     }
-    
+
+    if (!taskId) {
+      wx.showToast({
+        title: '任务信息异常',
+        icon: 'none'
+      })
+      return
+    }
+
     // 震动反馈
     animationUtil.vibrate('light')
-    
+
     try {
-      await cloudApi.receiveTask(childId, taskId)
-      
+      const result = await cloudApi.receiveTask(childId, taskId)
+      if (result === null) {
+        wx.showToast({
+          title: '领取失败',
+          icon: 'none'
+        })
+        return
+      }
+
       wx.showToast({
         title: '任务已领取',
         icon: 'success',
         duration: 1500
       })
-      
+
       // 刷新数据
       await this.loadTasks()
     } catch (e) {
@@ -201,10 +228,10 @@ Page({
 
   // 完成任务
   async onCompleteTask(e) {
-    const id = Number(e.currentTarget.dataset.id)
+    const id = e.currentTarget.dataset.id
     const recordId = e.currentTarget.dataset.recordId
     const { reward, title } = e.currentTarget.dataset
-    
+
     if (!recordId) {
       wx.showToast({
         title: '请先领取任务',
@@ -212,7 +239,7 @@ Page({
       })
       return
     }
-    
+
     // 获取按钮位置
     const query = wx.createSelectorQuery()
     query.select(`#task-btn-${id}`).boundingClientRect()
@@ -222,24 +249,31 @@ Page({
         this.playFlowerAnimation(rect.left + rect.width / 2, rect.top)
       }
     })
-    
+
     // 震动反馈
     animationUtil.vibrate('medium')
-    
+
     try {
-      await cloudApi.completeTask(recordId)
+      const result = await cloudApi.completeTask(recordId)
+      if (result === null) {
+        wx.showToast({
+          title: '操作失败',
+          icon: 'none'
+        })
+        return
+      }
       const points = await app.refreshPoints()
       this.setData({
         currentPoints: points
       })
       this.updateJarState(points, this.data.goalPoints)
-      
+
       wx.showToast({
         title: `完成啦！+${reward} 小红花`,
         icon: 'success',
         duration: 2000
       })
-      
+
       setTimeout(() => {
         this.loadTasks()
       }, 500)
@@ -275,32 +309,32 @@ Page({
       if (res[0]) {
         const endX = res[0].left + res[0].width / 2
         const endY = res[0].top + res[0].height / 2
-        
+
         this.setData({
           showFlowerAnimation: true,
           flowerX: startX,
           flowerY: startY
         })
-        
+
         // 创建动画
         const animation = wx.createAnimation({
           duration: 600,
           timingFunction: 'ease-out'
         })
-        
+
         const deltaX = endX - startX
         const deltaY = endY - startY
-        
+
         animation
           .translate(deltaX, deltaY)
           .scale(0.3)
           .opacity(0)
           .step()
-        
+
         this.setData({
           flowerAnimationData: animation.export()
         })
-        
+
         // 动画结束后隐藏
         setTimeout(() => {
           this.setData({
@@ -322,20 +356,21 @@ Page({
     this.updateJarState(app.globalData.currentPoints, this.data.goalPoints)
     wx.stopPullDownRefresh()
   },
-  
+
   mergeTaskStatus(tasks = [], records = []) {
     const recordMap = {}
     records.forEach(record => {
-      const key = record.taskId
+      const key = record.taskId || record.task_id
       const current = recordMap[key]
       const recordTime = this.getRecordTimestamp(record)
       if (!current || recordTime > this.getRecordTimestamp(current)) {
         recordMap[key] = record
       }
     })
-    
+
     return tasks.map(task => {
-      const record = recordMap[task.id]
+      const taskId = task.id || task._id
+      const record = recordMap[taskId]
       let status = 'available'
       if (record) {
         status = record.status === 'completed' ? 'completed' : 'received'
@@ -343,8 +378,8 @@ Page({
       return {
         ...task,
         status,
-        recordId: record?.id || null,
-        parentLikedAt: record?.parentLikedAt || null
+        recordId: record?.id || record?._id || null,
+        parentLikedAt: record?.parentLikedAt || record?.parent_liked_at || null
       }
     })
   },
@@ -396,10 +431,12 @@ Page({
       this.jarAnimTimer = null
     }
   },
-  
+
   getRecordTimestamp(record) {
     if (!record) return 0
-    const time = record.completedAt || record.receivedAt || record.createdAt
+    const time = record.completedAt || record.completed_at ||
+      record.receivedAt || record.received_at ||
+      record.createdAt || record.created_at
     return dateUtil.getTimestamp(time)
   }
 })

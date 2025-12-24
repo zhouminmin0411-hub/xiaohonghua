@@ -1,5 +1,5 @@
 // 家长首页
-const api = require("../../utils/cloudApi")')
+const api = require('../../../utils/cloudApi')
 const dateUtil = require('../../utils/date')
 const app = getApp()
 

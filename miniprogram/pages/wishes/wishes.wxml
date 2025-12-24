@@ -62,8 +62,8 @@
             <text class="history-icon">{{item.isIncome ? '✨' : '🎁'}}</text>
           </view>
           <view class="history-info">
-            <view class="history-title">{{item.reason || (item.isIncome ? '完成任务' : '兑换奖励')}}</view>
-            <view class="history-time">{{item.formattedDate}}</view>
+            <view class="history-title" wx:if="{{item.reason}}">{{item.reason}}</view>
+            <view class="history-time" wx:if="{{item.formattedDate}}">{{item.formattedDate}}</view>
           </view>
         </view>
         <view class="history-right {{item.isIncome ? 'income' : 'expense'}}">

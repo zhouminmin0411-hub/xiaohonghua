@@ -1,5 +1,5 @@
 // 设置页面
-const api = require("../../utils/cloudApi")')
+const api = require('../../utils/cloudApi')
 const app = getApp()
 
 Page({
@@ -269,7 +269,7 @@ Page({
   // 验证密码
   async verifyPassword(password) {
     await app.ensureReady()
-    const userId = app.globalData.parentUserId || app.globalData.userInfo?.id || 2
+    const userId = app.globalData.userInfo?._id || app.globalData.userInfo?.id || app.globalData.parentUserId || 2
     try {
       await api.verifyParentPassword(userId, password)
 

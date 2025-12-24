@@ -20,7 +20,7 @@
       <view 
         wx:for="{{tasks}}" 
         wx:key="id" 
-        class="task-item {{!item.isActive ? 'task-disabled' : ''}}"
+        class="task-item {{item.isActive === false ? 'task-disabled' : ''}}"
       >
         <view class="task-main">
           <view class="task-icon">{{item.icon}}</view>
@@ -99,21 +99,34 @@
 
         <view class="form-actions">
           <view class="form-btn cancel-btn" bind:tap="hidePopup">取消</view>
-          <view class="form-btn submit-btn" bind:tap="submitTask">
-            {{editingTask ? '保存' : '创建'}}
+          <view class="form-btn submit-btn {{submitting ? 'is-disabled' : ''}}" bind:tap="submitTask">
+            {{submitting ? '保存中...' : (editingTask ? '保存' : '创建')}}
           </view>
         </view>
       </view>
     </view>
   </van-popup>
 
-  <!-- 任务类型选择器 -->
-  <van-popup show="{{showTypePopup}}" position="bottom">
-    <van-picker
-      columns="{{typeColumns}}"
-      bind:confirm="onTypeConfirm"
-      bind:cancel="onTypeCancel"
-    />
-  </van-popup>
+  <!-- 任务类型选择器（自定义） -->
+  <view wx:if="{{showTypePicker}}" class="type-picker-mask" bind:tap="onTypeCancel">
+    <view class="type-picker-sheet" catch:tap="noop">
+      <view class="type-picker-header">
+        <text class="type-picker-cancel" bind:tap="onTypeCancel">取消</text>
+        <text class="type-picker-title">任务类型</text>
+        <text class="type-picker-confirm" bind:tap="onTypeConfirm">确定</text>
+      </view>
+      <picker-view
+        class="type-picker-view"
+        indicator-style="height: 88rpx;"
+        value="{{[tempTypeIndex]}}"
+        bindchange="onTypePickerChange"
+      >
+        <picker-view-column>
+          <view class="type-picker-item" wx:for="{{typeColumns}}" wx:key="value">
+            {{item.text}}
+          </view>
+        </picker-view-column>
+      </picker-view>
+    </view>
+  </view>
 </view>
-

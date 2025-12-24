@@ -1,19 +1,15 @@
 <!--积分商城页面 · 绘本风 Refined-->
 <view class="page-container">
-  <!-- 顶部积分栏 -->
-  <view class="header">
-    <view class="header-title">积分商城</view>
-    <view class="flower-counter">
-      <image src="/assets/flower1.png" class="flower-counter-icon" mode="aspectFit" />
-      <text class="flower-counter-number">{{currentPoints}}</text>
-    </view>
-  </view>
-
   <!-- 奖励列表 -->
   <view class="section">
     <view class="section-header">
-      <text class="section-title">可兑换奖励</text>
-      <text class="section-subtitle">积分越多，惊喜越大</text>
+      <view class="section-title-row">
+        <text class="section-title">可兑换奖励</text>
+        <view class="flower-counter">
+          <image src="/assets/flower1.png" class="flower-counter-icon" mode="aspectFit" />
+          <text class="flower-counter-number">{{currentPoints}}</text>
+        </view>
+      </view>
     </view>
 
     <view wx:if="{{rewards.length === 0}}" class="empty-state">
@@ -30,7 +26,10 @@
         <view class="reward-icon">{{item.icon}}</view>
         <view class="reward-info">
           <view class="reward-title">{{item.title}}</view>
-          <view class="reward-cost">{{item.cost}} 小红花</view>
+          <view class="reward-cost">
+            <text>{{item.cost}}</text>
+            <image src="/assets/flower1.png" class="reward-cost-icon" mode="aspectFit" />
+          </view>
         </view>
 
         <view class="reward-action">
@@ -41,7 +40,7 @@
             data-title="{{item.title}}"
             data-cost="{{item.cost}}"
           >
-            {{currentPoints < item.cost ? '积分不足' : '兑换'}}
+            {{currentPoints < item.cost ? '🌺不足' : '兑换'}}
           </view>
         </view>
       </view>

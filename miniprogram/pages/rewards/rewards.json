@@ -4,8 +4,7 @@
     "van-toast": "@vant/weapp/toast/index",
     "van-dialog": "@vant/weapp/dialog/index"
   },
-  "navigationBarTitleText": "积分商城",
+  "navigationBarTitleText": "小红花",
   "enablePullDownRefresh": true,
   "backgroundColor": "#F9F9F9"
 }
-

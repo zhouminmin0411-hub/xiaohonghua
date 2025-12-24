@@ -1,5 +1,6 @@
 const app = getApp()
 const api = require('../../utils/cloudApi')
+const dateUtil = require('../../utils/date')
 
 const GREETING_MESSAGES = [
     '今天你很努力 💪',
@@ -204,7 +205,7 @@ Page({
 
     updateJarState(points) {
         // Assuming goal is 20 for now, or could be dynamic
-        const goal = 20
+        const goal = 100
         const ratio = Math.min(points / goal, 1)
 
         let suffix = '0'
@@ -240,7 +241,6 @@ Page({
     },
 
     formatDate(dateStr) {
-        const date = new Date(dateStr)
-        return `${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`
+        return dateUtil.formatMonthDayTime(dateStr)
     }
 })

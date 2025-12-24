@@ -202,6 +202,11 @@
   transform: scale(0.98);
 }
 
+.form-btn.is-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 .cancel-btn {
   background: #F5F5F5;
   color: #666;
@@ -228,4 +233,58 @@
 .empty-text {
   font-size: 28rpx;
   color: #999;
+}
+
+/* 任务类型选择器 */
+.type-picker-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 3000;
+  display: flex;
+  align-items: flex-end;
+}
+
+.type-picker-sheet {
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 32rpx 32rpx 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.type-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+  border-bottom: 2rpx solid #F1E8DD;
+  font-size: 30rpx;
+}
+
+.type-picker-cancel {
+  color: #8B7355;
+}
+
+.type-picker-title {
+  font-weight: 600;
+  color: #6B5744;
+}
+
+.type-picker-confirm {
+  color: #2E7D32;
+}
+
+.type-picker-view {
+  height: 400rpx;
+}
+
+.type-picker-item {
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  font-size: 34rpx;
+  color: #4E3B2E;
 }
