@@ -8,20 +8,39 @@ cloud.init({
 const db = cloud.database()
 const _ = db.command
 
+async function getCurrentUser() {
+  const { OPENID } = cloud.getWXContext()
+  const { data } = await db.collection('users').where({ openid: OPENID }).limit(1).get()
+  return data && data.length > 0 ? data[0] : null
+}
+
 exports.main = async (event, context) => {
   const { childId, rewardId } = event
   
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return { code: 401, message: '未登录' }
+    }
+
+    const effectiveChildId = user._id
+    if (childId && childId !== effectiveChildId) {
+      return { code: 403, message: '无权兑换该奖品' }
+    }
+
     // 获取奖品信息
     const { data: reward } = await db.collection('rewards').doc(rewardId).get()
     
     if (!reward) {
       return { code: 404, message: '奖品不存在' }
     }
+    if (reward.created_by_parent_id !== effectiveChildId) {
+      return { code: 403, message: '无权兑换该奖品' }
+    }
     
     // 获取当前积分
     const { data: pointHistory } = await db.collection('point_history')
-      .where({ child_id: childId })
+      .where({ child_id: effectiveChildId })
       .orderBy('created_at', 'desc')
       .limit(1)
       .get()
@@ -46,7 +65,7 @@ exports.main = async (event, context) => {
     // 创建兑换记录
     const exchangeResult = await db.collection('reward_records').add({
       data: {
-        child_id: childId,
+        child_id: effectiveChildId,
         reward_id: rewardId,
         cost: reward.cost,
         status: 'pending',
@@ -60,7 +79,7 @@ exports.main = async (event, context) => {
     // 添加积分历史记录
     await db.collection('point_history').add({
       data: {
-        child_id: childId,
+        child_id: effectiveChildId,
         change: -reward.cost,
         balance: newBalance,
         reason: `兑换奖品: ${reward.title}`,
@@ -89,4 +108,3 @@ exports.main = async (event, context) => {
     }
   }
 }
-

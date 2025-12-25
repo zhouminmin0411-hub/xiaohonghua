@@ -109,6 +109,8 @@ Page({
     data: {
         userInfo: {},
         avatarDisplayUrl: '',
+        showProfileAuth: false,
+        profileNickname: '',
         currentPoints: 0,
         goalPoints: 20,
         history: [],
@@ -175,14 +177,89 @@ Page({
         const points = app.globalData.currentPoints
         const userInfo = app.globalData.userInfo || {}
         const greetingMessage = this.pickRandomGreeting()
+        const nickname = typeof app.isPlaceholderNickname === 'function' && app.isPlaceholderNickname(userInfo.nickname)
+            ? ''
+            : (userInfo.nickname || '')
         this.setData({
             currentPoints: points,
             userInfo: userInfo,
             avatarDisplayUrl: this.getDisplayAvatarUrl(userInfo.avatarUrl),
-            greetingMessage
+            greetingMessage,
+            showProfileAuth: typeof app.needsProfile === 'function' ? app.needsProfile(userInfo) : false,
+            profileNickname: nickname
         })
         this.updateJarState(points)
         this.loadHistory()
+    },
+
+    async onChooseAvatar(e) {
+        const { avatarUrl } = e.detail
+        if (!avatarUrl) {
+            return
+        }
+
+        const updated = typeof app.applyUserProfile === 'function'
+            ? await app.applyUserProfile({ avatarUrl })
+            : false
+
+        if (!updated) {
+            wx.showToast({
+                title: '头像更新失败',
+                icon: 'none'
+            })
+        }
+
+        this.refreshProfileState()
+    },
+
+    onProfileNicknameInput(e) {
+        this.setData({ profileNickname: e.detail.value })
+    },
+
+    async onProfileNicknameBlur() {
+        const nickname = (this.data.profileNickname || '').trim()
+        if (!nickname) {
+            return
+        }
+
+        const updated = typeof app.applyUserProfile === 'function'
+            ? await app.applyUserProfile({ nickName: nickname })
+            : false
+
+        if (!updated) {
+            wx.showToast({
+                title: '昵称更新失败',
+                icon: 'none'
+            })
+        }
+
+        this.refreshProfileState()
+    },
+
+    onProfileFinish() {
+        const userInfo = app.globalData.userInfo || {}
+        const needsProfile = typeof app.needsProfile === 'function' ? app.needsProfile(userInfo) : false
+        if (needsProfile) {
+            wx.showToast({
+                title: '请先完善头像和昵称',
+                icon: 'none'
+            })
+            return
+        }
+        this.refreshProfileState()
+    },
+
+    refreshProfileState() {
+        const userInfo = app.globalData.userInfo || {}
+        const nickname = typeof app.isPlaceholderNickname === 'function' && app.isPlaceholderNickname(userInfo.nickname)
+            ? ''
+            : (userInfo.nickname || '')
+        this.setData({
+            userInfo,
+            avatarDisplayUrl: this.getDisplayAvatarUrl(userInfo.avatarUrl),
+            showProfileAuth: typeof app.needsProfile === 'function' ? app.needsProfile(userInfo) : false,
+            profileNickname: nickname
+        })
     },
     
     // 获取显示用的头像URL
@@ -193,6 +270,10 @@ Page({
         // 如果是相对路径（以/uploads开头），加上后端服务器地址
         if (avatarUrl.startsWith('/uploads')) {
             return 'http://localhost:8081/api' + avatarUrl
+        }
+        // 如果是以//开头（协议相对），加上https:
+        if (avatarUrl.startsWith('//')) {
+            return 'https:' + avatarUrl
         }
         // 如果是完整URL，直接返回
         return avatarUrl

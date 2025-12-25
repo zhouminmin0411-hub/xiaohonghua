@@ -14,6 +14,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAdjusters;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 /**
@@ -52,12 +54,10 @@ public class WeeklyPointScheduledTask {
         LocalDateTime now = LocalDateTime.now();
         int currentDayOfWeek = now.get(ChronoField.DAY_OF_WEEK); // 1=周一, 7=周日
         LocalTime currentTime = now.toLocalTime();
-        String currentTimeStr = String.format("%02d:%02d", currentTime.getHour(), currentTime.getMinute());
-        
         for (WeeklyPointConfig config : configs) {
             try {
                 // 检查是否到达发放时间
-                if (!shouldDistribute(config, currentDayOfWeek, currentTimeStr, now)) {
+                if (!shouldDistribute(config, currentDayOfWeek, currentTime, now)) {
                     continue;
                 }
                 
@@ -88,31 +88,49 @@ public class WeeklyPointScheduledTask {
      * 
      * @param config 配置
      * @param currentDayOfWeek 当前星期（1-7）
-     * @param currentTimeStr 当前时间（HH:mm）
+     * @param currentTime 当前时间
      * @param now 当前时间
      * @return 是否应该发放
      */
-    private boolean shouldDistribute(WeeklyPointConfig config, int currentDayOfWeek, String currentTimeStr, LocalDateTime now) {
+    private boolean shouldDistribute(WeeklyPointConfig config, int currentDayOfWeek, LocalTime currentTime, LocalDateTime now) {
         // 检查星期是否匹配
         if (!config.getDayOfWeek().equals(currentDayOfWeek)) {
             return false;
         }
         
-        // 检查时间是否匹配
-        if (!config.getTime().equals(currentTimeStr)) {
+        // 检查时间是否已到达
+        LocalTime scheduledTime = parseTime(config.getTime());
+        if (scheduledTime == null || currentTime.isBefore(scheduledTime)) {
             return false;
         }
-        
-        // 防重复发放：检查是否在同一天已经发放过
-        LocalDateTime lastSentAt = config.getLastSentAt();
-        if (lastSentAt != null) {
-            // 如果上次发放时间是今天，则不再发放
-            if (lastSentAt.toLocalDate().equals(now.toLocalDate())) {
-                return false;
-            }
+
+        // 防重复发放：检查是否在本周已经发放过
+        if (hasSentThisWeek(config.getLastSentAt(), now)) {
+            return false;
         }
         
         return true;
     }
-}
 
+    private boolean hasSentThisWeek(LocalDateTime lastSentAt, LocalDateTime now) {
+        if (lastSentAt == null) {
+            return false;
+        }
+        LocalDateTime weekStart = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                .toLocalDate().atStartOfDay();
+        LocalDateTime weekEnd = weekStart.plusWeeks(1);
+        return !lastSentAt.isBefore(weekStart) && lastSentAt.isBefore(weekEnd);
+    }
+
+    private LocalTime parseTime(String time) {
+        if (time == null || time.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return LocalTime.parse(time);
+        } catch (DateTimeParseException e) {
+            log.warn("每周积分配置时间格式错误：{}", time);
+            return null;
+        }
+    }
+}

@@ -7,13 +7,29 @@ cloud.init({
 
 const db = cloud.database()
 
+async function getCurrentUser() {
+  const { OPENID } = cloud.getWXContext()
+  const { data } = await db.collection('users').where({ openid: OPENID }).limit(1).get()
+  return data && data.length > 0 ? data[0] : null
+}
+
 exports.main = async (event, context) => {
   const { childId, change, reason } = event
   
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return { code: 401, message: '未登录' }
+    }
+
+    const effectiveChildId = user._id
+    if (childId && childId !== effectiveChildId) {
+      return { code: 403, message: '无权调整该用户积分' }
+    }
+
     // 获取当前积分
     const { data: pointHistory } = await db.collection('point_history')
-      .where({ child_id: childId })
+      .where({ child_id: effectiveChildId })
       .orderBy('created_at', 'desc')
       .limit(1)
       .get()
@@ -24,7 +40,7 @@ exports.main = async (event, context) => {
     // 添加积分历史记录
     await db.collection('point_history').add({
       data: {
-        child_id: childId,
+        child_id: effectiveChildId,
         change: change,
         balance: newBalance,
         reason: reason || '手动调整',
@@ -51,4 +67,3 @@ exports.main = async (event, context) => {
     }
   }
 }
-

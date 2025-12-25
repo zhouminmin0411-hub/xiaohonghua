@@ -34,10 +34,11 @@ Page({
   loadUserInfo() {
     const userInfo = app.globalData.userInfo
     if (userInfo) {
+      const normalized = this.normalizeUserInfo(userInfo)
       this.setData({
-        userInfo,
-        tempNickname: userInfo.nickname || '',
-        avatarDisplayUrl: this.getDisplayAvatarUrl(userInfo.avatarUrl)
+        userInfo: normalized,
+        tempNickname: normalized.nickname || '',
+        avatarDisplayUrl: this.getDisplayAvatarUrl(normalized.avatarUrl)
       })
       return
     }
@@ -46,10 +47,11 @@ Page({
       const cached = wx.getStorageSync('userInfo')
       if (cached) {
         const parsed = typeof cached === 'string' ? JSON.parse(cached) : cached
+        const normalized = this.normalizeUserInfo(parsed)
         this.setData({
-          userInfo: parsed,
-          tempNickname: parsed.nickname || '',
-          avatarDisplayUrl: this.getDisplayAvatarUrl(parsed.avatarUrl)
+          userInfo: normalized,
+          tempNickname: normalized.nickname || '',
+          avatarDisplayUrl: this.getDisplayAvatarUrl(normalized.avatarUrl)
         })
       } else {
         this.setData({
@@ -61,6 +63,15 @@ Page({
       this.setData({
         avatarDisplayUrl: '/assets/default-avatar.png'
       })
+    }
+  },
+
+  normalizeUserInfo(userInfo) {
+    if (!userInfo) return userInfo
+    const avatarUrl = userInfo.avatarUrl || userInfo.avatar_url || ''
+    return {
+      ...userInfo,
+      avatarUrl
     }
   },
   
@@ -87,7 +98,7 @@ Page({
     console.log('选择的头像:', avatarUrl)
     
     try {
-      const userId = app.globalData.userInfo?.id
+      const userId = app.globalData.userInfo?._id || app.globalData.userInfo?.id
       if (!userId) {
         wx.showToast({
           title: '请先登录',
@@ -107,7 +118,7 @@ Page({
       // 更新本地数据
       const newUserInfo = {
         ...this.data.userInfo,
-        avatarUrl: result.avatarUrl || avatarUrl
+        avatarUrl: result?.avatarUrl || avatarUrl
       }
       
       this.setData({ 
@@ -122,9 +133,10 @@ Page({
         title: '头像更新成功',
         icon: 'success'
       })
-      
+
       // 如果昵称还是默认的，提示用户设置昵称
-      if (newUserInfo.nickname === '小朋友' || !newUserInfo.nickname) {
+      const currentNickname = this.data.userInfo?.nickname
+      if (this.isPlaceholderNickname(currentNickname)) {
         setTimeout(() => {
           wx.showToast({
             title: '别忘了设置昵称哦',
@@ -156,6 +168,17 @@ Page({
     }
   },
 
+  isPlaceholderNickname(nickname) {
+    if (typeof app.isPlaceholderNickname === 'function') {
+      return app.isPlaceholderNickname(nickname)
+    }
+    const normalized = typeof nickname === 'string' ? nickname.trim() : ''
+    if (!normalized) {
+      return true
+    }
+    return normalized === '小红花宝宝' || normalized === '微信用户'
+  },
+
   // 昵称输入
   onNicknameInput(e) {
     this.setData({
@@ -173,7 +196,7 @@ Page({
     }
 
     try {
-      const userId = app.globalData.userInfo?.id
+      const userId = app.globalData.userInfo?._id || app.globalData.userInfo?.id
       if (!userId) {
         wx.showToast({
           title: '请先登录',
@@ -269,7 +292,7 @@ Page({
   // 验证密码
   async verifyPassword(password) {
     await app.ensureReady()
-    const userId = app.globalData.userInfo?._id || app.globalData.userInfo?.id || app.globalData.parentUserId || 2
+    const userId = app.globalData.userInfo?._id || app.globalData.userInfo?.id
     try {
       await api.verifyParentPassword(userId, password)
 

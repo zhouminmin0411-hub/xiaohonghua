@@ -213,7 +213,7 @@ Page({
       this.setData({ submitting: true })
       const payload = {
         ...formData,
-        createdByParentId: app.globalData.parentUserId || app.globalData.userInfo?._id || app.globalData.userInfo?.id || null
+        createdByParentId: app.globalData.userInfo?._id || app.globalData.userInfo?.id || null
       }
 
       if (editingReward) {

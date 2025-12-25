@@ -14,6 +14,12 @@ const DEFAULT_CONFIG = {
   lastSentAt: null
 }
 
+async function getCurrentUser() {
+  const { OPENID } = cloud.getWXContext()
+  const { data } = await db.collection('users').where({ openid: OPENID }).limit(1).get()
+  return data && data.length > 0 ? data[0] : null
+}
+
 exports.main = async (event, context) => {
   const { childId } = event || {}
 
@@ -22,8 +28,18 @@ exports.main = async (event, context) => {
   }
 
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return { code: 401, message: '未登录' }
+    }
+
+    const effectiveChildId = user._id
+    if (childId !== effectiveChildId) {
+      return { code: 403, message: '无权访问该用户配置' }
+    }
+
     const { data } = await db.collection('weekly_config')
-      .where({ child_id: childId })
+      .where({ child_id: effectiveChildId })
       .limit(1)
       .get()
 

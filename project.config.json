@@ -17,7 +17,12 @@
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "glob",
+        "value": "**/*.tmp.png"
+      }
+    ],
     "include": []
   },
   "appid": "wxe1fef2b88d7ea01e",

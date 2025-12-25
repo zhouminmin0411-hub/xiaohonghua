@@ -6,6 +6,28 @@ cloud.init({
 })
 
 const db = cloud.database()
+const _ = db.command
+
+async function migrateLegacyData(userId) {
+  const legacyCondition = _.or([
+    { created_by_parent_id: null },
+    { created_by_parent_id: 2 }
+  ])
+
+  await db.collection('tasks').where(legacyCondition).update({
+    data: {
+      created_by_parent_id: userId,
+      updated_at: db.serverDate()
+    }
+  })
+
+  await db.collection('rewards').where(legacyCondition).update({
+    data: {
+      created_by_parent_id: userId,
+      updated_at: db.serverDate()
+    }
+  })
+}
 
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
@@ -19,11 +41,29 @@ exports.main = async (event, context) => {
     }).get()
     
     if (users.length > 0) {
+      const existingUser = users[0]
+      if (!existingUser.data_migrated) {
+        await migrateLegacyData(existingUser._id)
+        await userCollection.doc(existingUser._id).update({
+          data: {
+            data_migrated: true,
+            updated_at: db.serverDate()
+          }
+        })
+
+        const { data: refreshedUser } = await userCollection.doc(existingUser._id).get()
+        return {
+          code: 200,
+          message: '登录成功',
+          data: refreshedUser
+        }
+      }
+
       // 用户已存在，返回用户信息
       return {
         code: 200,
         message: '登录成功',
-        data: users[0]
+        data: existingUser
       }
     } else {
       // 新用户，创建用户记录
@@ -35,6 +75,7 @@ exports.main = async (event, context) => {
           avatar_url: '',
           parent_password: null,
           child_id: null,
+          data_migrated: true,
           created_at: db.serverDate(),
           updated_at: db.serverDate()
         }
@@ -58,4 +99,3 @@ exports.main = async (event, context) => {
     }
   }
 }
-

@@ -8,9 +8,9 @@ cloud.init({
 const db = cloud.database()
 
 exports.main = async (event, context) => {
-  const { userId, password } = event || {}
+  const { password } = event || {}
 
-  if (!userId || !password) {
+  if (!password) {
     return {
       code: 400,
       message: '缺少必要参数'
@@ -18,22 +18,9 @@ exports.main = async (event, context) => {
   }
 
   const users = db.collection('users')
-  const docId = String(userId)
-
-  // 先按 docId 直接获取，不存在再按字段查询
-  let user = null
-  try {
-    const res = await users.doc(docId).get()
-    user = res.data
-  } catch (err) {
-    // doc 获取失败，尝试按 id 字段查询（兼容数字 ID）
-    try {
-      const { data } = await users.where({ id: userId }).limit(1).get()
-      user = data && data.length > 0 ? data[0] : null
-    } catch (e) {
-      // ignore
-    }
-  }
+  const { OPENID } = cloud.getWXContext()
+  const { data } = await users.where({ openid: OPENID }).limit(1).get()
+  const user = data && data.length > 0 ? data[0] : null
 
   if (!user) {
     return {
@@ -42,7 +29,7 @@ exports.main = async (event, context) => {
     }
   }
 
-  const docToUpdate = user._id || docId
+  const docToUpdate = user._id
 
   // 首次设置：若未设置过家长密码，则直接写入并通过
   if (!user.parent_password) {

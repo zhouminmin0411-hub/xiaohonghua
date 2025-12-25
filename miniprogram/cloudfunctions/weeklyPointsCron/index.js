@@ -1,4 +1,4 @@
-// 云函数：weeklyPointsCron - 每小时检查并发放每周积分
+// 云函数：weeklyPointsCron - 每分钟检查并发放每周积分
 const cloud = require('wx-server-sdk')
 
 cloud.init({
@@ -30,6 +30,20 @@ function getWeekStart(date) {
   return start
 }
 
+function getWeekEnd(weekStart) {
+  const end = new Date(weekStart)
+  end.setDate(weekStart.getDate() + 7)
+  end.setHours(0, 0, 0, 0)
+  return end
+}
+
+function isWithinWeek(dateValue, weekStart, weekEnd) {
+  if (!dateValue) return false
+  const date = new Date(dateValue)
+  if (Number.isNaN(date.getTime())) return false
+  return date >= weekStart && date < weekEnd
+}
+
 function parseTimeString(timeStr) {
   if (!timeStr) return null
   const parts = String(timeStr).split(':')
@@ -52,6 +66,7 @@ function getScheduledAt(now, configDay, timeInfo) {
 function hasSentForSchedule(lastSentAt, scheduledAt) {
   if (!lastSentAt || !scheduledAt) return false
   const last = new Date(lastSentAt)
+  if (Number.isNaN(last.getTime())) return false
   return last.getTime() >= scheduledAt.getTime()
 }
 
@@ -91,6 +106,19 @@ async function getCurrentBalance(childId) {
   return pointHistory.length > 0 ? pointHistory[0].balance : 0
 }
 
+async function hasWeeklyHistory(childId, weekStart, weekEnd) {
+  const { data } = await db.collection('point_history')
+    .where({
+      child_id: childId,
+      source_type: 'weekly',
+      created_at: _.gte(weekStart).and(_.lt(weekEnd))
+    })
+    .limit(1)
+    .get()
+
+  return data && data.length > 0
+}
+
 async function distributeWeeklyPoints(config, scheduledAt) {
   const childId = config.child_id
   const weeklyAmount = Number(config.weekly_amount) || 0
@@ -126,6 +154,8 @@ async function distributeWeeklyPoints(config, scheduledAt) {
 exports.main = async () => {
   const now = getLocalNow()
   const currentDay = getLocalDayOfWeek(now)
+  const weekStart = getWeekStart(now)
+  const weekEnd = getWeekEnd(weekStart)
   const configs = await listEnabledConfigs()
 
   const issued = []
@@ -143,6 +173,14 @@ exports.main = async () => {
     }
 
     if (hasSentForSchedule(config.last_sent_at, scheduledAt)) {
+      continue
+    }
+
+    if (isWithinWeek(config.last_sent_at, weekStart, weekEnd)) {
+      continue
+    }
+
+    if (await hasWeeklyHistory(config.child_id, weekStart, weekEnd)) {
       continue
     }
 

@@ -88,6 +88,106 @@
   font-size: 24rpx;
   color: #8C7467;
 }
+
+.profile-setup-card {
+  margin: 8rpx 32rpx 0;
+  padding: 20rpx 24rpx 24rpx;
+  border-radius: 24rpx;
+  background: #FFF5D6;
+  border: 2rpx solid #FFD93D;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(107, 69, 43, 0.08);
+}
+
+.profile-setup-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #6B452B;
+}
+
+.profile-setup-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.profile-setup-row--column {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8rpx;
+}
+
+.profile-avatar-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 12rpx 16rpx;
+  border: 2rpx solid #F2D599;
+  box-shadow: 0 4rpx 10rpx rgba(107, 69, 43, 0.08);
+}
+
+.profile-avatar-btn::after {
+  border: none;
+}
+
+.profile-avatar-img {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+}
+
+.profile-avatar-placeholder {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #FFD93D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-avatar-face {
+  font-size: 36rpx;
+}
+
+.profile-avatar-label {
+  font-size: 24rpx;
+  color: #6B452B;
+  font-weight: 600;
+}
+
+.profile-nickname-input {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 14rpx 16rpx;
+  border: 2rpx solid #F2D599;
+  font-size: 26rpx;
+  color: #5D4037;
+}
+
+.profile-nickname-hint {
+  font-size: 22rpx;
+  color: #B0866E;
+}
+
+.profile-finish-btn {
+  align-self: flex-end;
+  background: #FF6B6B;
+  color: #FFFFFF;
+  border-radius: 32rpx;
+  padding: 12rpx 28rpx;
+  font-size: 24rpx;
+  line-height: 1;
+}
+
+.profile-finish-btn::after {
+  border: none;
+}
 /* 许愿瓶展示区 */
 .jar-section {
   display: flex;

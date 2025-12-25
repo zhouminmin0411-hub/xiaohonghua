@@ -7,10 +7,29 @@ cloud.init({
 
 const db = cloud.database()
 
+async function getCurrentUser() {
+  const { OPENID } = cloud.getWXContext()
+  const { data } = await db.collection('users').where({ openid: OPENID }).limit(1).get()
+  return data && data.length > 0 ? data[0] : null
+}
+
 exports.main = async (event, context) => {
   const { rewardId, icon, title, description, cost, stock } = event
   
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return { code: 401, message: '未登录' }
+    }
+
+    const { data: reward } = await db.collection('rewards').doc(rewardId).get()
+    if (!reward) {
+      return { code: 404, message: '奖品不存在' }
+    }
+    if (reward.created_by_parent_id !== user._id) {
+      return { code: 403, message: '无权操作该奖品' }
+    }
+
     const updateData = {}
     if (icon !== undefined) updateData.icon = icon
     if (title !== undefined) updateData.title = title
@@ -23,12 +42,12 @@ exports.main = async (event, context) => {
       data: updateData
     })
     
-    const { data: reward } = await db.collection('rewards').doc(rewardId).get()
+    const { data: updatedReward } = await db.collection('rewards').doc(rewardId).get()
     
     return {
       code: 200,
       message: '更新成功',
-      data: reward
+      data: updatedReward
     }
   } catch (error) {
     console.error('更新奖品失败', error)
@@ -39,4 +58,3 @@ exports.main = async (event, context) => {
     }
   }
 }
-

@@ -7,13 +7,29 @@ cloud.init({
 
 const db = cloud.database()
 
+async function getCurrentUser() {
+  const { OPENID } = cloud.getWXContext()
+  const { data } = await db.collection('users').where({ openid: OPENID }).limit(1).get()
+  return data && data.length > 0 ? data[0] : null
+}
+
 exports.main = async (event, context) => {
   const { childId } = event
   
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return { code: 401, message: '未登录' }
+    }
+
+    const effectiveChildId = user._id
+    if (childId && childId !== effectiveChildId) {
+      return { code: 403, message: '无权访问积分历史' }
+    }
+
     const { data: history } = await db.collection('point_history')
       .where({
-        child_id: childId
+        child_id: effectiveChildId
       })
       .orderBy('created_at', 'desc')
       .limit(100)
@@ -33,4 +49,3 @@ exports.main = async (event, context) => {
     }
   }
 }
-

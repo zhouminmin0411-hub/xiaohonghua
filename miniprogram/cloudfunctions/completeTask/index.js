@@ -8,15 +8,30 @@ cloud.init({
 const db = cloud.database()
 const _ = db.command
 
+async function getCurrentUser() {
+  const { OPENID } = cloud.getWXContext()
+  const { data } = await db.collection('users').where({ openid: OPENID }).limit(1).get()
+  return data && data.length > 0 ? data[0] : null
+}
+
 exports.main = async (event, context) => {
   const { recordId } = event
   
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return { code: 401, message: '未登录' }
+    }
+
     // 获取任务记录
     const { data: record } = await db.collection('task_records').doc(recordId).get()
     
     if (!record) {
       return { code: 404, message: '任务记录不存在' }
+    }
+
+    if (record.child_id !== user._id) {
+      return { code: 403, message: '无权操作该记录' }
     }
     
     // 获取任务信息
@@ -80,4 +95,3 @@ exports.main = async (event, context) => {
     }
   }
 }
-

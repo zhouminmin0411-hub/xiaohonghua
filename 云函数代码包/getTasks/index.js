@@ -7,11 +7,23 @@ cloud.init({
 
 const db = cloud.database()
 
+async function getCurrentUser() {
+  const { OPENID } = cloud.getWXContext()
+  const { data } = await db.collection('users').where({ openid: OPENID }).limit(1).get()
+  return data && data.length > 0 ? data[0] : null
+}
+
 exports.main = async (event, context) => {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return { code: 401, message: '未登录' }
+    }
+
     const { data: tasks } = await db.collection('tasks')
       .where({
-        is_active: true
+        is_active: true,
+        created_by_parent_id: user._id
       })
       .orderBy('created_at', 'desc')
       .get()
@@ -30,4 +42,3 @@ exports.main = async (event, context) => {
     }
   }
 }
-

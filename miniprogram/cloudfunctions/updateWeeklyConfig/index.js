@@ -7,6 +7,12 @@ cloud.init({
 
 const db = cloud.database()
 
+async function getCurrentUser() {
+  const { OPENID } = cloud.getWXContext()
+  const { data } = await db.collection('users').where({ openid: OPENID }).limit(1).get()
+  return data && data.length > 0 ? data[0] : null
+}
+
 exports.main = async (event, context) => {
   const { childId, config } = event || {}
 
@@ -17,10 +23,20 @@ exports.main = async (event, context) => {
   const { weeklyAmount, dayOfWeek, time, enabled } = config
 
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return { code: 401, message: '未登录' }
+    }
+
+    const effectiveChildId = user._id
+    if (childId !== effectiveChildId) {
+      return { code: 403, message: '无权更新该用户配置' }
+    }
+
     const collection = db.collection('weekly_config')
     let data
     try {
-      const res = await collection.where({ child_id: childId }).limit(1).get()
+      const res = await collection.where({ child_id: effectiveChildId }).limit(1).get()
       data = res.data
     } catch (err) {
       // 集合不存在时自动创建
@@ -32,7 +48,7 @@ exports.main = async (event, context) => {
       }
     }
     const payload = {
-      child_id: childId,
+      child_id: effectiveChildId,
       weekly_amount: weeklyAmount,
       day_of_week: dayOfWeek,
       time: time,

@@ -7,20 +7,39 @@ cloud.init({
 
 const db = cloud.database()
 
+async function getCurrentUser() {
+  const { OPENID } = cloud.getWXContext()
+  const { data } = await db.collection('users').where({ openid: OPENID }).limit(1).get()
+  return data && data.length > 0 ? data[0] : null
+}
+
 exports.main = async (event, context) => {
   const { childId, taskId } = event
   
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return { code: 401, message: '未登录' }
+    }
+
+    const effectiveChildId = user._id
+    if (childId && childId !== effectiveChildId) {
+      return { code: 403, message: '无权操作该任务' }
+    }
+
     // 检查任务是否存在
-    const { data: tasks } = await db.collection('tasks').doc(taskId).get()
-    if (!tasks) {
+    const { data: task } = await db.collection('tasks').doc(taskId).get()
+    if (!task || task.is_active === false) {
       return { code: 404, message: '任务不存在' }
+    }
+    if (task.created_by_parent_id !== effectiveChildId) {
+      return { code: 403, message: '无权操作该任务' }
     }
     
     // 创建任务记录
     const result = await db.collection('task_records').add({
       data: {
-        child_id: childId,
+        child_id: effectiveChildId,
         task_id: taskId,
         status: 'in_progress',
         received_at: db.serverDate(),
@@ -48,4 +67,3 @@ exports.main = async (event, context) => {
     }
   }
 }
-

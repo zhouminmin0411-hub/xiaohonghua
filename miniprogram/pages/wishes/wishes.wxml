@@ -18,6 +18,42 @@
       </view>
     </view>
   </view>
+
+  <view class="profile-setup-card" wx:if="{{showProfileAuth}}">
+    <view class="profile-setup-title">完善资料</view>
+    <view class="profile-setup-row">
+      <button
+        class="profile-avatar-btn"
+        open-type="chooseAvatar"
+        bindchooseavatar="onChooseAvatar"
+      >
+        <image
+          class="profile-avatar-img"
+          src="{{avatarDisplayUrl}}"
+          mode="aspectFit"
+          wx:if="{{avatarDisplayUrl}}"
+        />
+        <view class="profile-avatar-placeholder" wx:else>
+          <text class="profile-avatar-face">🙂</text>
+        </view>
+        <text class="profile-avatar-label">微信头像</text>
+      </button>
+    </view>
+    <view class="profile-setup-row profile-setup-row--column">
+      <input
+        class="profile-nickname-input"
+        type="nickname"
+        value="{{profileNickname}}"
+        placeholder="微信昵称"
+        bindinput="onProfileNicknameInput"
+        bindconfirm="onProfileNicknameBlur"
+        bindblur="onProfileNicknameBlur"
+      />
+      <text class="profile-nickname-hint">点击输入框获取昵称</text>
+    </view>
+    <button class="profile-finish-btn" bind:tap="onProfileFinish">完成</button>
+  </view>
+
   <!-- 许愿瓶展示区 (Hero Section) -->
   <view class="jar-section">
     <view class="jar-container">

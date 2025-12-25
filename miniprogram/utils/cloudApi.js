@@ -62,6 +62,28 @@ export async function verifyParentPassword(userId, password) {
   return await callFunction('verifyParentPassword', { userId, password }, true)
 }
 
+/**
+ * 更新用户资料
+ */
+export async function updateUserProfile(userId, profileData) {
+  const payload = profileData || userId || {}
+  return await callFunction('updateUserProfile', payload, true)
+}
+
+/**
+ * 上传用户头像（云函数简化：直接更新头像URL）
+ */
+export async function uploadAvatar(userId, avatarUrl) {
+  const payload = { avatarUrl }
+  const result = await callFunction('updateUserProfile', payload, true)
+  if (!result) {
+    return null
+  }
+  return {
+    avatarUrl: result.avatarUrl || result.avatar_url || avatarUrl
+  }
+}
+
 // ========== 每周配置 ==========
 
 /**
@@ -202,3 +224,4 @@ export async function deleteReward(rewardId) {
 export async function adjustPoints(childId, change, reason) {
   return await callFunction('adjustPoints', { childId, change, reason })
 }
+

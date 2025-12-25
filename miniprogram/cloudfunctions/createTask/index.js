@@ -7,10 +7,21 @@ cloud.init({
 
 const db = cloud.database()
 
+async function getCurrentUser() {
+  const { OPENID } = cloud.getWXContext()
+  const { data } = await db.collection('users').where({ openid: OPENID }).limit(1).get()
+  return data && data.length > 0 ? data[0] : null
+}
+
 exports.main = async (event, context) => {
-  const { type, icon, title, description, reward, time_estimate, parentId } = event
+  const { type, icon, title, description, reward, time_estimate } = event
   
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return { code: 401, message: '未登录' }
+    }
+
     const result = await db.collection('tasks').add({
       data: {
         type: type || 'daily',
@@ -19,7 +30,7 @@ exports.main = async (event, context) => {
         description: description || '',
         reward: reward || 0,
         time_estimate: time_estimate || '',
-        created_by_parent_id: parentId,
+        created_by_parent_id: user._id,
         is_active: true,
         created_at: db.serverDate(),
         updated_at: db.serverDate()
@@ -42,4 +53,3 @@ exports.main = async (event, context) => {
     }
   }
 }
-

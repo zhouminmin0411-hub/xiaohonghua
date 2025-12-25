@@ -21,7 +21,7 @@ Page({
     this.loadRewards()
 
     // 获取屏幕尺寸
-    const systemInfo = wx.getSystemInfoSync()
+    const systemInfo = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync()
     this.setData({
       canvasWidth: systemInfo.windowWidth,
       canvasHeight: systemInfo.windowHeight
