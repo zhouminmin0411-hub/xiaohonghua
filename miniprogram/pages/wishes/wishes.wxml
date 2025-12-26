@@ -4,10 +4,18 @@
   <view class="header">
     <view class="header-content">
       <!-- Avatar Section -->
-      <view class="avatar-container" bind:tap="onOpenSettings">
-        <image class="avatar-img" src="{{avatarDisplayUrl}}" mode="aspectFit" wx:if="{{avatarDisplayUrl}}"/>
-        <view class="default-avatar" wx:else>
-          <text class="default-avatar-face">🙂</text>
+      <view class="avatar-wrapper">
+        <view class="avatar-container {{showParentGuide ? 'guide-active' : ''}}" bind:tap="onOpenSettings">
+          <image class="avatar-img" src="{{avatarDisplayUrl}}" mode="aspectFit" wx:if="{{avatarDisplayUrl}}"/>
+          <view class="default-avatar" wx:else>
+            <text class="default-avatar-face">🙂</text>
+          </view>
+        </view>
+        
+        <!-- Parent Mode Guide Bubble (Moved here to avoid overflow:hidden clipping) -->
+        <view class="parent-guide-bubble" wx:if="{{showParentGuide}}" bind:tap="onOpenSettings">
+          <view class="guide-bubble-text">点击这里切换家长模式，为小朋友添加小红花任务和奖励哦</view>
+          <view class="guide-bubble-arrow"></view>
         </view>
       </view>
       
@@ -19,40 +27,7 @@
     </view>
   </view>
 
-  <view class="profile-setup-card" wx:if="{{showProfileAuth}}">
-    <view class="profile-setup-title">完善资料</view>
-    <view class="profile-setup-row">
-      <button
-        class="profile-avatar-btn"
-        open-type="chooseAvatar"
-        bindchooseavatar="onChooseAvatar"
-      >
-        <image
-          class="profile-avatar-img"
-          src="{{avatarDisplayUrl}}"
-          mode="aspectFit"
-          wx:if="{{avatarDisplayUrl}}"
-        />
-        <view class="profile-avatar-placeholder" wx:else>
-          <text class="profile-avatar-face">🙂</text>
-        </view>
-        <text class="profile-avatar-label">微信头像</text>
-      </button>
-    </view>
-    <view class="profile-setup-row profile-setup-row--column">
-      <input
-        class="profile-nickname-input"
-        type="nickname"
-        value="{{profileNickname}}"
-        placeholder="微信昵称"
-        bindinput="onProfileNicknameInput"
-        bindconfirm="onProfileNicknameBlur"
-        bindblur="onProfileNicknameBlur"
-      />
-      <text class="profile-nickname-hint">点击输入框获取昵称</text>
-    </view>
-    <button class="profile-finish-btn" bind:tap="onProfileFinish">完成</button>
-  </view>
+
 
   <!-- 许愿瓶展示区 (Hero Section) -->
   <view class="jar-section">

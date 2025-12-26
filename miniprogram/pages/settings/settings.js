@@ -4,23 +4,25 @@ const app = getApp()
 
 Page({
   data: {
-    userInfo: {
-      nickname: '小明',
-      avatarUrl: 'https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132'
-    },
-    avatarDisplayUrl: '/assets/default-avatar.png', // 用于显示的头像URL（处理后的完整URL）
+    userInfo: {},
+    avatarDisplayUrl: '',
     isParentMode: false,
     showPasswordDialog: false,
     password: '',
-    tempNickname: '' // 临时存储正在编辑的昵称
+    tempNickname: '',
+    isOnboarding: false,
+    canFinish: false,
+    showParentGuide: false
   },
 
-  async onLoad() {
+  async onLoad(options) {
     await app.ensureReady()
-    this.loadUserInfo()
+    const isOnboarding = options.onboarding === 'true'
     this.setData({
+      isOnboarding,
       isParentMode: app.globalData.isParentMode
     })
+    this.loadUserInfo()
   },
 
   onShow() {
@@ -74,7 +76,7 @@ Page({
       avatarUrl
     }
   },
-  
+
   // 获取显示用的头像URL
   getDisplayAvatarUrl(avatarUrl) {
     if (!avatarUrl) {
@@ -96,7 +98,7 @@ Page({
   async onChooseAvatar(e) {
     const { avatarUrl } = e.detail
     console.log('选择的头像:', avatarUrl)
-    
+
     try {
       const userId = app.globalData.userInfo?._id || app.globalData.userInfo?.id
       if (!userId) {
@@ -114,58 +116,54 @@ Page({
 
       // 上传头像到服务器
       const result = await api.uploadAvatar(userId, avatarUrl)
-      
+
       // 更新本地数据
       const newUserInfo = {
         ...this.data.userInfo,
         avatarUrl: result?.avatarUrl || avatarUrl
       }
-      
-      this.setData({ 
+
+      this.setData({
         userInfo: newUserInfo,
         avatarDisplayUrl: this.getDisplayAvatarUrl(newUserInfo.avatarUrl)
       })
       app.globalData.userInfo = newUserInfo
       wx.setStorageSync('userInfo', JSON.stringify(newUserInfo))
-      
+
       wx.hideLoading()
       wx.showToast({
-        title: '头像更新成功',
+        title: '头像已同步',
         icon: 'success'
       })
-
-      // 如果昵称还是默认的，提示用户设置昵称
-      const currentNickname = this.data.userInfo?.nickname
-      if (this.isPlaceholderNickname(currentNickname)) {
-        setTimeout(() => {
-          wx.showToast({
-            title: '别忘了设置昵称哦',
-            icon: 'none',
-            duration: 2000
-          })
-        }, 1500)
-      }
+      this.checkInput()
     } catch (error) {
       wx.hideLoading()
       console.error('上传头像失败', error)
-      
-      // 即使上传失败，也先在本地显示选择的头像
       const newUserInfo = {
         ...this.data.userInfo,
         avatarUrl: avatarUrl
       }
-      this.setData({ 
+      this.setData({
         userInfo: newUserInfo,
-        avatarDisplayUrl: avatarUrl // 临时URL直接使用
+        avatarDisplayUrl: avatarUrl
       })
       app.globalData.userInfo = newUserInfo
       wx.setStorageSync('userInfo', JSON.stringify(newUserInfo))
-      
-      wx.showToast({
-        title: '头像已暂存本地',
-        icon: 'none'
-      })
+      this.checkInput()
     }
+  },
+
+  checkInput() {
+    const { userInfo, tempNickname } = this.data
+    const nicknameToCheck = (tempNickname || userInfo?.nickname || '').trim()
+    const hasValidNickname = nicknameToCheck && !this.isPlaceholderNickname(nicknameToCheck)
+    const hasAvatar = !!(userInfo?.avatarUrl)
+
+    console.log('[CheckInput]', { nicknameToCheck, hasValidNickname, hasAvatar, tempNickname })
+
+    this.setData({
+      canFinish: !!hasAvatar && !!hasValidNickname
+    })
   },
 
   isPlaceholderNickname(nickname) {
@@ -183,13 +181,15 @@ Page({
   onNicknameInput(e) {
     this.setData({
       tempNickname: e.detail.value
+    }, () => {
+      this.checkInput()
     })
   },
 
   // 昵称失去焦点（保存昵称）
   async onNicknameBlur() {
     const { tempNickname, userInfo } = this.data
-    
+
     // 如果昵称没有变化，不做处理
     if (!tempNickname || tempNickname === userInfo.nickname) {
       return
@@ -212,27 +212,22 @@ Page({
 
       // 更新昵称到服务器
       await api.updateUserProfile(userId, { nickname: tempNickname })
-      
+
       // 更新本地数据
       const newUserInfo = {
         ...userInfo,
         nickname: tempNickname
       }
-      
+
       this.setData({ userInfo: newUserInfo })
       app.globalData.userInfo = newUserInfo
       wx.setStorageSync('userInfo', JSON.stringify(newUserInfo))
-      
+
       wx.hideLoading()
-      wx.showToast({
-        title: '昵称更新成功',
-        icon: 'success'
-      })
+      this.checkInput()
     } catch (error) {
       wx.hideLoading()
       console.error('更新昵称失败', error)
-      
-      // 即使更新失败，也先在本地保存
       const newUserInfo = {
         ...userInfo,
         nickname: tempNickname
@@ -240,12 +235,62 @@ Page({
       this.setData({ userInfo: newUserInfo })
       app.globalData.userInfo = newUserInfo
       wx.setStorageSync('userInfo', JSON.stringify(newUserInfo))
-      
+      this.checkInput()
+    }
+  },
+
+  async onFinishOnboarding() {
+    if (!this.data.canFinish) {
       wx.showToast({
-        title: '昵称已暂存本地',
+        title: '请完善头像和昵称哦',
         icon: 'none'
       })
+      return
     }
+
+    const { userInfo, tempNickname } = this.data
+
+    // 强制同步一次最新资料到全局和缓存，防止 blur 未触发导致的延迟
+    const updatedUser = {
+      ...app.globalData.userInfo,
+      ...userInfo,
+      nickname: tempNickname || userInfo.nickname
+    }
+    app.globalData.userInfo = updatedUser
+    wx.setStorageSync('userInfo', JSON.stringify(updatedUser))
+
+    try {
+      // 同时也尝试后台静默更新一次服务器（防止只有本地成功）
+      const userId = updatedUser._id || updatedUser.id
+      if (userId) {
+        api.updateUserProfile(userId, {
+          nickname: updatedUser.nickname,
+          avatarUrl: updatedUser.avatarUrl
+        }).catch(err => console.error('Silent update failed', err))
+      }
+    } catch (e) { }
+
+    // 标记需要展示主页指引
+    wx.setStorageSync('showParentGuide', true)
+
+    wx.showToast({
+      title: '设置好了！',
+      icon: 'success',
+      duration: 1500
+    })
+
+    // 延迟跳回主页
+    setTimeout(() => {
+      console.log('[Onboarding] Switching to wishes tab')
+      wx.switchTab({
+        url: '/pages/wishes/wishes',
+        fail: (err) => {
+          console.error('[Onboarding] switchTab failed', err)
+          // 备用方案
+          wx.reLaunch({ url: '/pages/wishes/wishes' })
+        }
+      })
+    }, 1500)
   },
 
   // 切换至家长视角

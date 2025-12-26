@@ -117,14 +117,15 @@ Page({
         loading: false,
         jarImage: '/assets/bottle_0.png',
         petalCloud: [],
-        greetingMessage: ''
+        greetingMessage: '',
+        showParentGuide: false
     },
 
     // 生成随机花瓣配置
     generatePetalCloud(count = 40) {
         const petals = []
         const maxDelay = 16  // 最大延迟16秒，让花瓣在16秒内陆续出现
-        
+
         for (let i = 0; i < count; i++) {
             const startX = Math.random() * 800 - 50   // -50-750rpx 覆盖整个屏幕宽度(750rpx)并稍微超出
             const startY = Math.random() * 200   // -50-150rpx 从更高位置开始，部分在屏幕外
@@ -137,7 +138,7 @@ Page({
             const delay = Math.random() * maxDelay  // 0-16秒随机延迟
             const scale = Math.random() * 0.5 + 0.85  // 0.85-1.35
             const rotation = Math.random() * 180 + 180  // 180-360度
-            
+
             petals.push({
                 startX: startX.toFixed(0),
                 startY: startY.toFixed(0),
@@ -153,6 +154,11 @@ Page({
     },
 
     onOpenSettings() {
+        // 如果正在引导，点击头像后清除引导标记
+        if (this.data.showParentGuide) {
+            this.setData({ showParentGuide: false })
+            wx.setStorageSync('showParentGuide', false)
+        }
         wx.navigateTo({
             url: '/pages/settings/settings'
         })
@@ -176,92 +182,40 @@ Page({
         await app.ensureReady()
         const points = app.globalData.currentPoints
         const userInfo = app.globalData.userInfo || {}
+
+        const needsProfile = typeof app.needsProfile === 'function' ? app.needsProfile(userInfo) : false
+        if (needsProfile) {
+            wx.navigateTo({
+                url: '/pages/settings/settings?onboarding=true'
+            })
+            return
+        }
+
+        // 检查是否需要显示家长引导
+        const showParentGuide = wx.getStorageSync('showParentGuide') || false
+
         const greetingMessage = this.pickRandomGreeting()
-        const nickname = typeof app.isPlaceholderNickname === 'function' && app.isPlaceholderNickname(userInfo.nickname)
-            ? ''
-            : (userInfo.nickname || '')
         this.setData({
             currentPoints: points,
             userInfo: userInfo,
             avatarDisplayUrl: this.getDisplayAvatarUrl(userInfo.avatarUrl),
             greetingMessage,
-            showProfileAuth: typeof app.needsProfile === 'function' ? app.needsProfile(userInfo) : false,
-            profileNickname: nickname
+            showParentGuide
         })
         this.updateJarState(points)
         this.loadHistory()
     },
 
-    async onChooseAvatar(e) {
-        const { avatarUrl } = e.detail
-        if (!avatarUrl) {
-            return
-        }
-
-        const updated = typeof app.applyUserProfile === 'function'
-            ? await app.applyUserProfile({ avatarUrl })
-            : false
-
-        if (!updated) {
-            wx.showToast({
-                title: '头像更新失败',
-                icon: 'none'
-            })
-        }
-
-        this.refreshProfileState()
-    },
-
-    onProfileNicknameInput(e) {
-        this.setData({ profileNickname: e.detail.value })
-    },
-
-    async onProfileNicknameBlur() {
-        const nickname = (this.data.profileNickname || '').trim()
-        if (!nickname) {
-            return
-        }
-
-        const updated = typeof app.applyUserProfile === 'function'
-            ? await app.applyUserProfile({ nickName: nickname })
-            : false
-
-        if (!updated) {
-            wx.showToast({
-                title: '昵称更新失败',
-                icon: 'none'
-            })
-        }
-
-        this.refreshProfileState()
-    },
-
-    onProfileFinish() {
-        const userInfo = app.globalData.userInfo || {}
-        const needsProfile = typeof app.needsProfile === 'function' ? app.needsProfile(userInfo) : false
-        if (needsProfile) {
-            wx.showToast({
-                title: '请先完善头像和昵称',
-                icon: 'none'
-            })
-            return
-        }
-        this.refreshProfileState()
-    },
 
     refreshProfileState() {
         const userInfo = app.globalData.userInfo || {}
-        const nickname = typeof app.isPlaceholderNickname === 'function' && app.isPlaceholderNickname(userInfo.nickname)
-            ? ''
-            : (userInfo.nickname || '')
         this.setData({
             userInfo,
             avatarDisplayUrl: this.getDisplayAvatarUrl(userInfo.avatarUrl),
-            showProfileAuth: typeof app.needsProfile === 'function' ? app.needsProfile(userInfo) : false,
-            profileNickname: nickname
+            showProfileAuth: typeof app.needsProfile === 'function' ? app.needsProfile(userInfo) : false
         })
     },
-    
+
     // 获取显示用的头像URL
     getDisplayAvatarUrl(avatarUrl) {
         if (!avatarUrl) {

@@ -294,3 +294,182 @@
   background: #FFD0D0;
 }
 
+/* 引导模式特有样式 */
+.onboarding-section {
+  padding: 40rpx 32rpx;
+}
+
+.onboarding-card {
+  background: #FFF9E6;
+  border-radius: 40rpx;
+  padding: 60rpx 40rpx;
+  border: 4rpx solid #5D4037;
+  box-shadow: 0 12rpx 0 #5D4037;
+  display: flex;
+  flex-direction: column;
+  gap: 40rpx;
+}
+
+.auth-subtitle {
+  text-align: center;
+  font-size: 28rpx;
+  color: #8C7467;
+  margin-bottom: 20rpx;
+}
+
+.auth-body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.avatar-wrapper-large {
+  padding: 0;
+  width: 200rpx !important;
+  height: 200rpx !important;
+  border-radius: 50% !important;
+  border: 8rpx solid #FFFFFF;
+  box-shadow: 0 8rpx 20rpx rgba(93, 64, 55, 0.1);
+  background: #FFD93D;
+  position: relative;
+  overflow: visible;
+  margin: 0 !important;
+}
+
+.avatar-large {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.avatar-edit-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #FF6B6B;
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  border: 4rpx solid #FFFFFF;
+}
+
+.input-label {
+  font-size: 26rpx;
+  color: #B0866E;
+  margin-bottom: 10rpx;
+}
+
+.nickname-section {
+  width: 100%;
+  padding: 0 40rpx;
+  box-sizing: border-box;
+}
+
+.nickname-input-large {
+  width: 100%;
+  height: 100rpx;
+  text-align: center;
+  font-size: 40rpx;
+  color: #5D4037;
+  font-weight: 700;
+}
+
+.input-line {
+  width: 100%;
+  height: 4rpx;
+  background: #D9C5B2;
+  border-radius: 2rpx;
+  margin-top: 4rpx;
+}
+
+.onboarding-footer {
+  width: 100%;
+  margin-top: 20rpx;
+}
+
+.confirm-btn-large {
+  width: 100% !important;
+  height: 100rpx;
+  background: #FFFFFF;
+  color: #D9D9D9;
+  border-radius: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  font-weight: bold;
+  border: 4rpx solid #D9D9D9;
+  transition: all 0.2s;
+  margin: 0 !important;
+}
+
+.confirm-btn-large.btn-active {
+  background: #FF6B6B !important;
+  color: #FFFFFF !important;
+  border-color: #5D4037 !important;
+}
+
+.confirm-btn-large:active {
+  transform: scale(0.98);
+}
+
+/* 家长模式引导卡片 */
+.parent-guide-card {
+  margin-top: 40rpx;
+  background: #E8F0FE;
+  border-radius: 32rpx;
+  padding: 32rpx;
+  border: 4rpx solid #4285F4;
+  opacity: 0.3;
+  pointer-events: none;
+  transition: all 0.4s;
+  transform: translateY(20rpx);
+}
+
+.guide-show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  animation: pulse-blue 2s infinite;
+}
+
+@keyframes pulse-blue {
+  0% { box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.4); }
+  70% { box-shadow: 0 0 0 20rpx rgba(66, 133, 244, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(66, 133, 244, 0); }
+}
+
+.guide-content {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.guide-icon {
+  font-size: 48rpx;
+}
+
+.guide-text-area {
+  flex: 1;
+}
+
+.guide-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1967D2;
+}
+
+.guide-desc {
+  font-size: 24rpx;
+  color: #4285F4;
+}
+
+.guide-arrow {
+  font-size: 32rpx;
+}

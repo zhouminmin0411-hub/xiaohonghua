@@ -2,11 +2,65 @@
 <view class="page-container">
   <!-- 顶部区域 -->
   <view class="header">
-    <view class="header-title">设置</view>
+    <view class="header-title">{{isOnboarding ? '和小朋友一起开始小红花旅程' : '设置'}}</view>
   </view>
 
-  <!-- 用户信息卡片 -->
-  <view class="user-section">
+  <!-- 引导模式特有视图 -->
+  <view class="onboarding-section" wx:if="{{isOnboarding}}">
+    <view class="onboarding-card">
+      <view class="auth-header">
+        <view class="auth-subtitle">让小红花记住你们的每一次进步呀</view>
+      </view>
+
+      <view class="auth-body">
+        <button 
+          class="avatar-wrapper-large" 
+          open-type="chooseAvatar" 
+          bindchooseavatar="onChooseAvatar"
+        >
+          <image class="avatar-large" src="{{avatarDisplayUrl || '/assets/default-avatar.png'}}" mode="aspectFill" />
+          <view class="avatar-edit-icon">📸</view>
+        </button>
+        <text class="input-label">点击更换可爱头像</text>
+
+        <view class="nickname-section">
+          <input 
+            type="nickname" 
+            class="nickname-input-large" 
+            placeholder="给宝宝取个名字吧" 
+            value="{{tempNickname}}"
+            bindinput="onNicknameInput"
+            bindblur="onNicknameBlur"
+          />
+          <view class="input-line"></view>
+        </view>
+      </view>
+
+      <view class="onboarding-footer">
+        <button 
+          class="confirm-btn-large {{canFinish ? 'btn-active' : ''}}" 
+          bind:tap="onFinishOnboarding"
+        >
+          开启旅程
+        </button>
+      </view>
+
+      <!-- 完成资料后的引导：切换家长模式 -->
+      <view class="parent-guide-card {{canFinish ? 'guide-show' : ''}}" bind:tap="onSwitchToParent">
+        <view class="guide-content">
+          <view class="guide-icon">🎯</view>
+          <view class="guide-text-area">
+            <view class="guide-title">第二步：添加任务</view>
+            <view class="guide-desc">去家长视角，为宝宝定制第一个任务吧</view>
+          </view>
+          <view class="guide-arrow">👉</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 用户信息卡片 (非引导态) -->
+  <view class="user-section" wx:if="{{!isOnboarding}}">
     <view class="user-card">
       <!-- 头像编辑区 -->
       <view class="avatar-edit-wrapper">
@@ -41,8 +95,19 @@
     </view>
   </view>
 
-  <!-- 设置列表 -->
-  <view class="settings-list">
+  <!-- 设置列表 (非引导态) -->
+  <view class="settings-list" wx:if="{{!isOnboarding}}">
+    <!-- 引导卡片可以移动到这里，或者保留在顶部 -->
+    <view class="parent-guide-card guide-show" wx:if="{{showParentGuide}}" bind:tap="onSwitchToParent">
+      <view class="guide-content">
+        <view class="guide-icon">🎯</view>
+        <view class="guide-text-area">
+          <view class="guide-title">接下来：添加任务</view>
+          <view class="guide-desc">去家长视角，为宝宝定制第一个任务吧</view>
+        </view>
+        <view class="guide-arrow">👉</view>
+      </view>
+    </view>
     <view 
       class="setting-item"
       bind:tap="onSwitchToParent"
